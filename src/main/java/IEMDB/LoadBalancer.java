@@ -1,0 +1,131 @@
+package IEMDB;
+
+import IEMDB.Exception.*;
+import IEMDB.Movie.*;
+import IEMDB.User.User;
+import IEMDB.User.UserDB;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class LoadBalancer {
+    private UserDB userDB = new UserDB();
+    private MovieDB movieDB = new MovieDB();
+    private ActorDB actorDB = new ActorDB();
+    private CommentDB commentDB = new CommentDB();
+
+    private Integer uniqueCommentID = 1;
+
+    private void castValidation(Movie movie) throws Exception {
+        List<Integer> cast = movie.getCast();
+        for (Integer actorId : cast) {
+            if (!actorDB.actorExists(actorId))
+                throw new ActorNotFoundException();
+        }
+    }
+
+    public void addActor(Actor actor) {
+        actorDB.addActor(actor);
+    }
+
+    public void addMovie(Movie movie) {
+        try {
+            castValidation(movie);
+            movieDB.addMovie(movie);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void addUser(User user) throws Exception {
+        User tempUser = userDB.getUserByEmail(user.getEmail());
+        if (tempUser != null)
+            throw new DuplicateEmailAddressException();
+
+        userDB.addUser(user);
+    }
+
+    public void addComment(String userEmail, Integer movieId, String text) throws Exception {
+        Movie tempMovie = movieDB.getMovieById(movieId);
+        if (tempMovie == null)
+            throw new MovieNotFoundException();
+
+        User tempUser = userDB.getUserByEmail(userEmail);
+        if (tempUser == null)
+            throw new UserNotFoundException();
+
+        Comment tempCM = new Comment(uniqueCommentID, userEmail, movieId, text);
+        tempMovie.addComment(tempCM);
+        commentDB.addComment(tempCM);
+        uniqueCommentID += 1;
+    }
+    public void addRateToMovie(Rate rate) throws Exception {
+        Movie tempMovie = movieDB.getMovieById(rate.getMovieId());
+        if (tempMovie == null)
+            throw new MovieNotFoundException();
+
+        User tempUser = userDB.getUserByEmail(rate.getEmail());
+        if (tempUser == null)
+            throw new UserNotFoundException();
+
+        if (rate.getScore() < 1 || rate.getScore() > 10)
+            throw new InvalidRateScoreException();
+
+        tempMovie.addRate(rate);
+    }
+    public void addVoteToComment(String userEmail, Integer commentId, Integer vote) throws Exception{
+        User tempUser = userDB.getUserByEmail(userEmail);
+        if (tempUser == null)
+            throw new UserNotFoundException();
+
+        Comment tempComment = commentDB.getCommentById(commentId);
+        if (tempComment == null)
+            throw new CommentNotFoundException();
+
+        if (vote != 1 && vote != -1 && vote != 0)
+            throw new InvalidVoteValueException();
+
+        tempComment.addVote(userEmail, vote);
+        tempUser.addVote(commentId, vote);
+    }
+    public void addMovieToWatchList(String userEmail, Integer movieId) throws Exception {
+        Movie tempMovie = movieDB.getMovieById(movieId);
+        if (tempMovie == null)
+            throw new MovieNotFoundException();
+
+        User tempUser = userDB.getUserByEmail(userEmail);
+        if (tempUser == null)
+            throw new UserNotFoundException();
+
+        Integer ageLimit = tempMovie.getAgeLimit();
+        tempUser.addToWatchList(movieId, ageLimit);
+        //Agelimit Check Beshe.
+    }
+    public void removeMovieFromWatchList(String userEmail, Integer movieId) throws Exception {
+        Movie tempMovie = movieDB.getMovieById(movieId);
+        if (tempMovie == null)
+            throw new MovieNotFoundException();
+
+        User tempUser = userDB.getUserByEmail(userEmail);
+        if (tempUser == null)
+            throw new UserNotFoundException();
+
+        tempUser.removeFromWatchList(movieId);
+    }
+    public void getMoviesList() {
+        movieDB.getMoviesList();
+    }
+
+    public void getMovieById(Integer movieId) {
+        Movie tempMovie = movieDB.getMovieById(movieId);
+        System.out.println("Hanooz Kamel Nashode");
+    }
+    public void getMoviesByGenre(String genre) {
+        Movie tempMovie = movieDB.getMoviesByGenre(genre);
+        System.out.println("Hanooz Kamel Nashode");
+    }
+    public void getWatchList(String userEmail) {
+        User tempUser = userDB.getUserByEmail(userEmail);
+        tempUser.getWatchList();
+    }
+}
