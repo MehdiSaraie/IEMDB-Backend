@@ -21,6 +21,11 @@ public class UserDB {
         usersByEmail.put(user.getEmail(), user);
     }
 
+    public void removeUser(User user) {
+        Users.remove(user);
+        usersByEmail.remove(user.getEmail());
+    }
+
     public User getUserByEmail(String email) {
         return usersByEmail.get(email);
     }

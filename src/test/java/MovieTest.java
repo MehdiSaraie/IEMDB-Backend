@@ -3,6 +3,7 @@ import IEMDB.LoadBalancer;
 import IEMDB.Movie.*;
 import IEMDB.User.User;
 
+import org.json.JSONObject;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
 
@@ -12,6 +13,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MovieTest {
     static LoadBalancer lB = new LoadBalancer();
@@ -20,7 +23,7 @@ public class MovieTest {
     static Movie movie;
 
     @BeforeClass
-    public static void beforeRestaurantsTest() throws Exception {
+    public static void beforeTest() throws Exception {
         user1 = new User("sara@ut.ac.ir", "sara1234", "Sara", "sara", "1998-03-11");
         lB.addUser(user1);
         user2 = new User("sajjad@ut.ac.ir", "sajjad1234", "Sajjad", "sajjad", "2000-06-14");
@@ -39,12 +42,6 @@ public class MovieTest {
         movie = new Movie(1, "The Godfather", "The aging patriarch of an organized crime dynasty in postwar New York City transfers control of his clandestine empire to his reluctant youngest son.", "1972-03-14", "Francis Ford Coppola", new ArrayList(Arrays.asList("Mario Puzo", "Francis Ford Coppola")), new ArrayList(Arrays.asList("Crime", "Drama")), new ArrayList(Arrays.asList(1, 2, 3)), 9.2, 175, 14);
         lB.addMovie(movie);
     }
-
-    @AfterClass
-    public static void afterRestaurantsTest() {
-//        System.out.println("after restaurants test");
-    }
-
 
     @Test
     public void testRateMovieForSuccess() throws Exception {
@@ -117,5 +114,15 @@ public class MovieTest {
         lB.addVoteToComment("sara@ut.ac.ir", 1, 2);
         assertFalse(lB.getComment(1).getVoters().containsKey("sara@ut.ac.ir"));
         lB.removeComment(1);
+    }
+
+    @Test
+    public void testGetMoviesByGenre() throws Exception{
+        String movies = "[{\"director\":\"Francis Ford Coppola\",\"name\":\"The Godfather\",\"genre\":\"[Crime, Drama]\",\"movieId\":\"1\"}, {\"director\":\"Francis Ford Coppola\",\"name\":\"The Godfather\",\"genre\":\"[Crime, Drama]\",\"movieId\":\"1\"}, {\"director\":\"Francis Ford Coppola\",\"name\":\"The Godfather\",\"genre\":\"[Crime, Drama]\",\"movieId\":\"1\"}, {\"director\":\"Francis Ford Coppola\",\"name\":\"The Godfather\",\"genre\":\"[Crime, Drama]\",\"movieId\":\"1\"}, {\"director\":\"Francis Ford Coppola\",\"name\":\"The Godfather\",\"genre\":\"[Crime, Drama]\",\"movieId\":\"1\"}]";
+        Map<String, String> elements = new HashMap<>();
+        elements.put("MoviesListByGenre", movies);
+        JSONObject expectedMovies = new JSONObject(elements);
+        assertEquals(expectedMovies.toString(), lB.getMoviesByGenre("Drama"));
+        assertTrue(true);
     }
 }

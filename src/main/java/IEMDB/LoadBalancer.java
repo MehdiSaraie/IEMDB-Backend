@@ -49,6 +49,10 @@ public class LoadBalancer {
         userDB.addUser(user);
     }
 
+    public void removeUser(User user) {
+        userDB.removeUser(user);
+    }
+
     public void addComment(String userEmail, Integer movieId, String text) throws Exception {
         Movie tempMovie = movieDB.getMovieById(movieId);
         if (tempMovie == null)
