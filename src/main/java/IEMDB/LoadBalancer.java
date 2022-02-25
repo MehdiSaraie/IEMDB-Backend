@@ -165,4 +165,14 @@ public class LoadBalancer {
 
         return json.toString();
     }
+
+    public Comment getComment(Integer commentId) {
+        return commentDB.getCommentById(commentId);
+    }
+    public Comment removeComment(Integer commentId) throws Exception {
+        if (commentDB.getCommentById(commentId) == null)
+            throw new CommentNotFoundException();
+        uniqueCommentID -= 1;
+        return commentDB.removeComment(commentId);
+    }
 }
