@@ -30,7 +30,6 @@ public class Comment {
     public Integer getId() {
         return this.id;
     }
-
     public Integer getMovieId() {
         return this.movieId;
     }
@@ -48,10 +47,4 @@ public class Comment {
         else if (vote == 1)
             likesCount += 1;
     }
-
-    public Map<String, Integer> getVoters() { return this.voters; }
-
-    public Integer getLikesCount() { return likesCount; }
-
-    public Integer getDislikesCount() { return dislikesCount; }
 }

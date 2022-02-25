@@ -1,16 +1,20 @@
 package IEMDB;
 
-import IEMDB.Exception.*;
+import java.util.Map;
+import java.util.List;
+import java.util.HashMap;
+import java.util.ArrayList;
+
 import IEMDB.Movie.*;
 import IEMDB.User.User;
 import IEMDB.User.UserDB;
+import IEMDB.Exception.*;
+
+import org.json.JSONObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class LoadBalancer {
     private UserDB userDB = new UserDB();
@@ -117,8 +121,7 @@ public class LoadBalancer {
         tempUser.removeFromWatchList(movieId);
     }
     public String getMoviesList() {
-        String moviesList = movieDB.getMoviesList();
-        return moviesList;
+        return movieDB.getMoviesList();
     }
 
     public String getMovieById(Integer movieId) throws Exception{
@@ -127,52 +130,35 @@ public class LoadBalancer {
             throw new MovieNotFoundException();
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String movieDetail = gson.toJson(tempMovie);
 
-        return movieDetail;
+        return gson.toJson(tempMovie);
     }
-    public String getMoviesByGenre(String genre) {
+    public String getMoviesByGenre(String genre) throws JsonProcessingException {
         String moviesData = movieDB.getMoviesByGenre(genre);
-        Map<String, String> elements = new HashMap<>();
+        HashMap<String, Object> elements = new HashMap<String, Object>();
         elements.put("MoviesListByGenre", moviesData);
-        JSONObject json = new JSONObject(elements);
+        ObjectMapper mapper = new ObjectMapper();
 
-        return json.toString();
+        return mapper.writeValueAsString(elements);
     }
-    public String getWatchList(String userEmail) throws Exception{
+    public String getWatchList(String userEmail) throws Exception {
         User tempUser = userDB.getUserByEmail(userEmail);
         if (tempUser == null)
             throw new UserNotFoundException();
 
         List<Integer> watchList = tempUser.getWatchList();
 
-        boolean comma = false;
-        String output = "[";
+        List<String> output = new ArrayList<>();
         for (Integer i : watchList) {
-            if (comma)
-                output += ", ";
             Movie tempMovie = movieDB.getMovieById(i);
             String movieDetail = tempMovie.getSmallData();
-            output += movieDetail;
-
-            comma = true;
+            output.add(movieDetail);
         }
-        output += "]";
 
         Map<String, String> elements = new HashMap<>();
-        elements.put("WatchList", output);
+        elements.put("WatchList", output.toString());
         JSONObject json = new JSONObject(elements);
 
         return json.toString();
-    }
-
-    public Comment getComment(Integer commentId) {
-        return commentDB.getCommentById(commentId);
-    }
-    public Comment removeComment(Integer commentId) throws Exception {
-        if (commentDB.getCommentById(commentId) == null)
-            throw new CommentNotFoundException();
-        uniqueCommentID -= 1;
-        return commentDB.removeComment(commentId);
     }
 }

@@ -10,7 +10,6 @@ public class MovieDB {
     Map<Integer, Movie> moviesById = new HashMap<>();
 
     public void addMovie(Movie movie) {
-//        Set<Integer> allKeys = moviesById.keySet();
         movies.add(movie);
         moviesById.put(movie.getId(), movie);
     }
@@ -20,22 +19,16 @@ public class MovieDB {
     }
 
     public String getMoviesList() {
-        boolean comma = false;
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-        String output = "[";
+        List<String> output = new ArrayList<>();
         for (Movie mv : movies) {
-            if (comma)
-                output += ", ";
             String movieDetail = gson.toJson(mv);
-            output += movieDetail;
-
-            comma = true;
+            output.add(movieDetail);
         }
-        output += "]";
 
         Map<String, String> elements = new HashMap<>();
-        elements.put("MoviesList", output);
+        elements.put("MoviesList", output.toString());
         JSONObject json = new JSONObject(elements);
 
         return json.toString();
@@ -50,7 +43,6 @@ public class MovieDB {
                 output.add(mv.getSmallData());
         }
 
-//        System.out.println(output.toString());
         return output.toString();
     }
 }

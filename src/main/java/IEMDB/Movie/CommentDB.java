@@ -14,10 +14,6 @@ public class CommentDB {
         commentsById.put(comment.getId(), comment);
     }
 
-    public Comment removeComment(Integer commentId) {
-        return commentsById.remove(commentId);
-    }
-
     public Comment getCommentById(Integer id) {
         return commentsById.get(id);
     }
