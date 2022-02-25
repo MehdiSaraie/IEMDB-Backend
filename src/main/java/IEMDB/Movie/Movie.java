@@ -1,5 +1,9 @@
 package IEMDB.Movie;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +15,7 @@ public class Movie {
     private String releaseDate;
     private String director;
 
-    private Integer movieId;
+    private Integer id;
     private Integer ageLimit;
     private Float imdbRate;
     private Float duration;
@@ -31,7 +35,7 @@ public class Movie {
     public Movie(Integer id, String name, String summary, String releaseDate, String director,
                  ArrayList<String> writers, ArrayList<String> genres, ArrayList<Integer> cast,
                  Float imdbRate, Float duration, Integer ageLimit) {
-        this.movieId = id;
+        this.id = id;
         this.name = name;
         this.summary = summary;
         this.releaseDate = releaseDate;
@@ -49,7 +53,7 @@ public class Movie {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Movie that = (Movie) o;
-        return movieId.equals(that.getId());
+        return id.equals(that.getId());
     }
 
     private void calcMovieRate(Boolean isNew, Integer newScore, Integer oldScore) {
@@ -78,9 +82,24 @@ public class Movie {
         userComments.add(comment);
     }
 
-    public Integer getId() { return this.movieId; }
+    public String getSmallData() {
+        Map<String, String> elements = new HashMap<>();
+        elements.put("movieId", this.id.toString());
+        elements.put("name", this.name);
+        elements.put("director", this.director);
+        elements.put("genre", this.genres.toString());
+
+        Gson gson = new Gson();
+        Type gsonType = new TypeToken<HashMap>(){}.getType();
+        String gsonString = gson.toJson(elements, gsonType);
+
+        return gsonString;
+    }
+
+    public Integer getId() { return this.id; }
     public List<Integer> getCast() { return this.cast; }
     public Integer getAgeLimit() { return this.ageLimit; }
+    public List<String> getGenres() { return this.genres; }
 
 
 //    public String getName() { return this.name; }
@@ -88,7 +107,6 @@ public class Movie {
 //    public String getReleaseDate() { return this.releaseDate; }
 //    public String getDirector() { return this.director; }
 //    public List<String> getWriters() { return this.writers; }
-//    public List<String> getGenres() { return this.genres; }
 //    public Float getImdbRate() { return this.imdbRate; }
 //    public Float getDuration() { return this.duration; }
 

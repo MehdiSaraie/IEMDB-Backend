@@ -2,8 +2,6 @@ package IEMDB.User;
 
 import IEMDB.Exception.MovieAlreadyExistsException;
 import IEMDB.Exception.MovieNotFoundException;
-import IEMDB.Movie.Movie;
-import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +15,7 @@ public class User {
     private String nickname;
     private String birthDate;
     private List<Integer> userWatchList = new ArrayList<>();
-    Map<Integer, Integer> votings = new HashMap<Integer, Integer>();
+    Map<Integer, Integer> voting = new HashMap<>();
 
 //    private List<Comment> userCM = new ArrayList<>();
 
@@ -42,6 +40,9 @@ public class User {
     }
 
     public void addToWatchList(Integer movieId, Integer ageLimit) throws Exception{
+        if (userWatchList == null)
+            userWatchList = new ArrayList<>();
+
         if (userWatchList.contains(movieId))
             throw new MovieAlreadyExistsException();
 
@@ -49,17 +50,18 @@ public class User {
     }
 
     public void removeFromWatchList(Integer movieId) throws Exception{
+        if (userWatchList == null)
+            userWatchList = new ArrayList<>();
+
         if (!userWatchList.contains(movieId))
             throw new MovieNotFoundException();
 
         userWatchList.remove(movieId);
     }
 
-    public void getWatchList() {
-        System.out.println("Hanooz Kamel Nashode");
-    }
+    public List<Integer> getWatchList() { return userWatchList; }
 
     public void addVote(Integer commentId, Integer vote) {
-        votings.put(commentId, vote);
+        voting.put(commentId, vote);
     }
 }

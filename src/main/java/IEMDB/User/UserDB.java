@@ -1,9 +1,6 @@
 package IEMDB.User;
 
 import java.util.*;
-
-import IEMDB.Movie.Actor;
-import IEMDB.Movie.Movie;
 import org.apache.commons.lang3.BooleanUtils;
 
 public class UserDB {

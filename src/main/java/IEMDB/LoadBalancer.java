@@ -4,9 +4,13 @@ import IEMDB.Exception.*;
 import IEMDB.Movie.*;
 import IEMDB.User.User;
 import IEMDB.User.UserDB;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LoadBalancer {
     private UserDB userDB = new UserDB();
@@ -86,7 +90,7 @@ public class LoadBalancer {
             throw new InvalidVoteValueException();
 
         tempComment.addVote(userEmail, vote);
-        tempUser.addVote(commentId, vote);
+//        tempUser.addVote(commentId, vote);
     }
     public void addMovieToWatchList(String userEmail, Integer movieId) throws Exception {
         Movie tempMovie = movieDB.getMovieById(movieId);
@@ -112,20 +116,53 @@ public class LoadBalancer {
 
         tempUser.removeFromWatchList(movieId);
     }
-    public void getMoviesList() {
-        movieDB.getMoviesList();
+    public String getMoviesList() {
+        String moviesList = movieDB.getMoviesList();
+        return moviesList;
     }
 
-    public void getMovieById(Integer movieId) {
+    public String getMovieById(Integer movieId) throws Exception{
         Movie tempMovie = movieDB.getMovieById(movieId);
-        System.out.println("Hanooz Kamel Nashode");
+        if (tempMovie == null)
+            throw new MovieNotFoundException();
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String movieDetail = gson.toJson(tempMovie);
+
+        return movieDetail;
     }
-    public void getMoviesByGenre(String genre) {
-        Movie tempMovie = movieDB.getMoviesByGenre(genre);
-        System.out.println("Hanooz Kamel Nashode");
+    public String getMoviesByGenre(String genre) {
+        String moviesData = movieDB.getMoviesByGenre(genre);
+        Map<String, String> elements = new HashMap<>();
+        elements.put("MoviesListByGenre", moviesData);
+        JSONObject json = new JSONObject(elements);
+
+        return json.toString();
     }
-    public void getWatchList(String userEmail) {
+    public String getWatchList(String userEmail) throws Exception{
         User tempUser = userDB.getUserByEmail(userEmail);
-        tempUser.getWatchList();
+        if (tempUser == null)
+            throw new UserNotFoundException();
+
+        List<Integer> watchList = tempUser.getWatchList();
+
+        boolean comma = false;
+        String output = "[";
+        for (Integer i : watchList) {
+            if (comma)
+                output += ", ";
+            Movie tempMovie = movieDB.getMovieById(i);
+            String movieDetail = tempMovie.getSmallData();
+            output += movieDetail;
+
+            comma = true;
+        }
+        output += "]";
+
+        Map<String, String> elements = new HashMap<>();
+        elements.put("WatchList", output);
+        JSONObject json = new JSONObject(elements);
+
+        return json.toString();
     }
 }

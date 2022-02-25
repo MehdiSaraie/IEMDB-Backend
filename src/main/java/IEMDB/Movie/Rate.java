@@ -2,13 +2,13 @@ package IEMDB.Movie;
 
 public class Rate {
     private Integer score;
-    private String email;
+    private String userEmail;
     private Integer movieId;
 
-    public Rate(String email, Integer movieId, Integer score) {
+    public Rate(String userEmail, Integer movieId, Integer score) {
         this.score = score;
         this.movieId = movieId;
-        this.email = email;
+        this.userEmail = userEmail;
     }
 
     public Integer getScore() {
@@ -17,5 +17,5 @@ public class Rate {
     public Integer getMovieId() {
         return this.movieId;
     }
-    public String getEmail() { return this.email; }
+    public String getEmail() { return this.userEmail; }
 }
