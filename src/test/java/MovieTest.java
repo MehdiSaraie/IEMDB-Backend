@@ -118,7 +118,7 @@ public class MovieTest {
 
     @Test
     public void testGetMoviesByGenre() throws Exception{
-        String movies = "[{\"director\":\"Francis Ford Coppola\",\"name\":\"The Godfather\",\"genre\":\"[Crime, Drama]\",\"movieId\":\"1\"}, {\"director\":\"Francis Ford Coppola\",\"name\":\"The Godfather\",\"genre\":\"[Crime, Drama]\",\"movieId\":\"1\"}, {\"director\":\"Francis Ford Coppola\",\"name\":\"The Godfather\",\"genre\":\"[Crime, Drama]\",\"movieId\":\"1\"}, {\"director\":\"Francis Ford Coppola\",\"name\":\"The Godfather\",\"genre\":\"[Crime, Drama]\",\"movieId\":\"1\"}, {\"director\":\"Francis Ford Coppola\",\"name\":\"The Godfather\",\"genre\":\"[Crime, Drama]\",\"movieId\":\"1\"}]";
+        String movies = "[{\"director\":\"Francis Ford Coppola\",\"name\":\"The Godfather\",\"genre\":\"[Crime, Drama]\",\"movieId\":\"1\"}]";
         Map<String, String> elements = new HashMap<>();
         elements.put("MoviesListByGenre", movies);
         JSONObject expectedMovies = new JSONObject(elements);

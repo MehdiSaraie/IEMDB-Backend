@@ -61,4 +61,11 @@ public class UserTest {
         lB.addMovieToWatchList("sara@ut.ac.ir", 1);
     }
 
+    @Test (expected = AgeLimitErrorException.class)
+    public void testAddToWatchListForAgeLimitError() throws Exception {
+        User user2 = new User("ali@ut.ac.ir", "ali1234", "Ali", "ali", "2009-03-11");
+        lB.addUser(user2);
+        lB.addMovieToWatchList("ali@ut.ac.ir", 1);
+    }
+
 }
