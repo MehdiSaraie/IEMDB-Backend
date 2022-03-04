@@ -28,20 +28,14 @@ public class Actor {
         return this.id;
     }
 
-//    public String getName() {
-//        return this.name;
-//    }
-//    public String getBirthDate() {
-//        return this.birthDate;
-//    }
-//    public String getNationality() {
-//        return this.nationality;
-//    }
-//
-//    public void updateActorInfo(Actor actor) {
-//        this.name = actor.getName();
-//        this.birthDate = actor.getBirthDate();
-//        this.nationality = actor.getNationality();
-//    }
+    public String getName() {
+        return this.name;
+    }
+    public String getBirthDate() {
+        return this.birthDate;
+    }
+    public String getNationality() {
+        return this.nationality;
+    }
 
 }

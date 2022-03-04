@@ -26,7 +26,7 @@ public class UserDB {
         usersByEmail.remove(user.getEmail());
     }
 
-    public User getUserByEmail(String email) {
+    public User findUser(String email) {
         return usersByEmail.get(email);
     }
 }

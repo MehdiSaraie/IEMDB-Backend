@@ -4,8 +4,6 @@ import IEMDB.Exception.*;
 import IEMDB.Movie.*;
 import IEMDB.User.User;
 import IEMDB.User.UserDB;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -32,6 +30,14 @@ public class IEMDB {
         actorDB.addActor(actor);
     }
 
+    public Actor findActor(Integer actorId) throws Exception{
+        Actor actor = actorDB.findActor(actorId);
+        if (actor == null)
+            throw new ActorNotFoundException();
+
+        return actor;
+    }
+
     public void addMovie(Movie movie) {
         try {
             castValidation(movie);
@@ -42,37 +48,30 @@ public class IEMDB {
     }
 
     public void addUser(User user) throws Exception {
-        User tempUser = userDB.getUserByEmail(user.getEmail());
+        User tempUser = userDB.findUser(user.getEmail());
         if (tempUser != null)
             throw new DuplicateEmailAddressException();
 
         userDB.addUser(user);
     }
 
+    public User findUser(String userEmail) throws Exception {
+        User user = userDB.findUser(userEmail);
+        if (user == null)
+            throw new UserNotFoundException();
+        return user;
+    }
+
     public void removeUser(User user) {
         userDB.removeUser(user);
     }
 
-    public void addComment(String userEmail, Integer movieId, String text) throws Exception {
-        Movie tempMovie = movieDB.getMovieById(movieId);
-        if (tempMovie == null)
-            throw new MovieNotFoundException();
-
-        User tempUser = userDB.getUserByEmail(userEmail);
-        if (tempUser == null)
-            throw new UserNotFoundException();
-
-        Comment tempCM = new Comment(uniqueCommentID, userEmail, movieId, text);
-        tempMovie.addComment(tempCM);
-        commentDB.addComment(tempCM);
-        uniqueCommentID += 1;
-    }
     public void addComment(Comment comment) throws Exception {
-        Movie tempMovie = movieDB.getMovieById(comment.getMovieId());
+        Movie tempMovie = movieDB.findMovie(comment.getMovieId());
         if (tempMovie == null)
             throw new MovieNotFoundException();
 
-        User tempUser = userDB.getUserByEmail(comment.getUserEmail());
+        User tempUser = userDB.findUser(comment.getUserEmail());
         if (tempUser == null)
             throw new UserNotFoundException();
 
@@ -82,11 +81,11 @@ public class IEMDB {
         uniqueCommentID += 1;
     }
     public void addRateToMovie(Rate rate) throws Exception {
-        Movie tempMovie = movieDB.getMovieById(rate.getMovieId());
+        Movie tempMovie = movieDB.findMovie(rate.getMovieId());
         if (tempMovie == null)
             throw new MovieNotFoundException();
 
-        User tempUser = userDB.getUserByEmail(rate.getEmail());
+        User tempUser = userDB.findUser(rate.getEmail());
         if (tempUser == null)
             throw new UserNotFoundException();
 
@@ -95,8 +94,9 @@ public class IEMDB {
 
         tempMovie.addRate(rate);
     }
+
     public void addVoteToComment(String userEmail, Integer commentId, Integer vote) throws Exception{
-        User tempUser = userDB.getUserByEmail(userEmail);
+        User tempUser = userDB.findUser(userEmail);
         if (tempUser == null)
             throw new UserNotFoundException();
 
@@ -108,57 +108,55 @@ public class IEMDB {
             throw new InvalidVoteValueException();
 
         tempComment.addVote(userEmail, vote);
-//        tempUser.addVote(commentId, vote);
     }
+
     public void addMovieToWatchList(String userEmail, Integer movieId) throws Exception {
-        Movie tempMovie = movieDB.getMovieById(movieId);
+        Movie tempMovie = movieDB.findMovie(movieId);
         if (tempMovie == null)
             throw new MovieNotFoundException();
 
-        User tempUser = userDB.getUserByEmail(userEmail);
+        User tempUser = userDB.findUser(userEmail);
         if (tempUser == null)
             throw new UserNotFoundException();
 
         Integer ageLimit = tempMovie.getAgeLimit();
         tempUser.addToWatchList(movieId, ageLimit);
-        //Agelimit Check Beshe.
     }
+
     public void removeMovieFromWatchList(String userEmail, Integer movieId) throws Exception {
-        Movie tempMovie = movieDB.getMovieById(movieId);
+        Movie tempMovie = movieDB.findMovie(movieId);
         if (tempMovie == null)
             throw new MovieNotFoundException();
 
-        User tempUser = userDB.getUserByEmail(userEmail);
+        User tempUser = userDB.findUser(userEmail);
         if (tempUser == null)
             throw new UserNotFoundException();
 
         tempUser.removeFromWatchList(movieId);
     }
-    public String getMoviesList() {
-        String moviesList = movieDB.getMoviesList();
-        return moviesList;
+
+    public List<Movie> getMoviesList() {
+        return movieDB.getMoviesList();
     }
 
-    public String getMovieById(Integer movieId) throws Exception{
-        Movie tempMovie = movieDB.getMovieById(movieId);
-        if (tempMovie == null)
+    public Movie findMovie(Integer movieId) throws Exception{
+        Movie movie = movieDB.findMovie(movieId);
+        if (movie == null)
             throw new MovieNotFoundException();
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String movieDetail = gson.toJson(tempMovie);
-
-        return movieDetail;
+        return movie;
     }
-    public String getMoviesByGenre(String genre) {
-        String moviesData = movieDB.getMoviesByGenre(genre);
-        Map<String, String> elements = new HashMap<>();
-        elements.put("MoviesListByGenre", moviesData);
-        JSONObject json = new JSONObject(elements);
 
-        return json.toString();
+    public List<Movie> getMoviesByGenre(String genre) {
+        return movieDB.getMoviesByGenre(genre);
     }
+
+    public List<Movie> getMoviesByReleaseDate(Integer startYear, Integer endYear) {
+        return movieDB.getMoviesByReleaseDate(startYear, endYear);
+    }
+
     public String getWatchList(String userEmail) throws Exception{
-        User tempUser = userDB.getUserByEmail(userEmail);
+        User tempUser = userDB.findUser(userEmail);
         if (tempUser == null)
             throw new UserNotFoundException();
 
@@ -169,7 +167,7 @@ public class IEMDB {
         for (Integer i : watchList) {
             if (comma)
                 output += ", ";
-            Movie tempMovie = movieDB.getMovieById(i);
+            Movie tempMovie = movieDB.findMovie(i);
             String movieDetail = tempMovie.getSmallData();
             output += movieDetail;
 
@@ -187,6 +185,7 @@ public class IEMDB {
     public Comment getComment(Integer commentId) {
         return commentDB.getCommentById(commentId);
     }
+
     public Comment removeComment(Integer commentId) throws Exception {
         if (commentDB.getCommentById(commentId) == null)
             throw new CommentNotFoundException();

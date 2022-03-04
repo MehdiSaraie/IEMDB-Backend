@@ -26,8 +26,6 @@ public class Movie {
     private List<String> genres = new ArrayList<>();
     private List<Integer> cast = new ArrayList<>();
     private List<Comment> userComments = new ArrayList<>();
-
-//    private List<Rate> userRates = new ArrayList<>();
     Map<String, Rate> ratesByEmail = new HashMap<>();
 
     public Movie() {}
@@ -98,33 +96,18 @@ public class Movie {
     }
 
     public Integer getId() { return this.id; }
+    public String getName() { return this.name; }
+    public String getSummary() { return this.summary; }
+    public String getReleaseDate() { return this.releaseDate; }
+    public String getDirector() { return this.director; }
+    public List<String> getWriters() { return this.writers; }
+    public List<String> getGenres() { return this.genres; }
     public List<Integer> getCast() { return this.cast; }
+    public Double getImdbRate() { return this.imdbRate; }
+    public Integer getDuration() { return this.duration; }
     public Integer getAgeLimit() { return this.ageLimit; }
     public Map<String, Rate> getRatesByEmail() { return this.ratesByEmail; }
-    public double getRating() { return this.rating; }
     public List<Comment> getUserComments() { return this.userComments; }
-    public List<String> getGenres() { return this.genres; }
-
-
-//    public String getName() { return this.name; }
-//    public String getSummary() { return this.summary; }
-//    public String getReleaseDate() { return this.releaseDate; }
-//    public String getDirector() { return this.director; }
-//    public List<String> getWriters() { return this.writers; }
-//    public Float getImdbRate() { return this.imdbRate; }
-//    public Float getDuration() { return this.duration; }
-
-//    public void updateMovieInfo(Movie movie) {
-//        this.name = movie.getName();
-//        this.summary = movie.getSummary();
-//        this.releaseDate = movie.getReleaseDate();
-//        this.director = movie.getDirector();
-//        this.writers = movie.getWriters();
-//        this.genres = movie.getGenres();
-//        this.cast = movie.getCast();
-//        this.imdbRate = movie.getImdbRate();
-//        this.duration = movie.getDuration();
-//        this.ageLimit = movie.getAgeLimit();
-//    }
+    public Double getRating() { return this.rating; }
 
 }

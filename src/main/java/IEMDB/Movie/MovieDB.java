@@ -1,5 +1,6 @@
 package IEMDB.Movie;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -12,41 +13,37 @@ public class MovieDB {
         moviesById.put(movie.getId(), movie);
     }
 
-    public Movie getMovieById(Integer id) {
+    public Movie findMovie(Integer id) {
         return moviesById.get(id);
     }
 
-    public String getMoviesList() {
-        boolean comma = false;
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-        String output = "[";
-        for (Movie mv : new ArrayList<>(moviesById.values())) {
-            if (comma)
-                output += ", ";
-            String movieDetail = gson.toJson(mv);
-            output += movieDetail;
-
-            comma = true;
-        }
-        output += "]";
-
-        Map<String, String> elements = new HashMap<>();
-        elements.put("MoviesList", output);
-        JSONObject json = new JSONObject(elements);
-
-        return json.toString();
+    public List<Movie> getMoviesList() {
+        return new ArrayList<>(moviesById.values());
     }
 
-    public String getMoviesByGenre(String genre) {
-        List<String> output = new ArrayList<>();
-
+    public List<Movie> getMoviesByGenre(String genre) {
+        List<Movie> output = new ArrayList<>();
         for (Movie mv : new ArrayList<>(moviesById.values())) {
             List<String> genres = mv.getGenres();
             if (genres != null && genres.contains(genre))
-                output.add(mv.getSmallData());
+                output.add(mv);
         }
+        return output;
+    }
 
-        return output.toString();
+    public List<Movie> getMoviesByReleaseDate(Integer startYear, Integer endYear){
+        try {
+            List<Movie> output = new ArrayList<>();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            for (Movie mv : new ArrayList<>(moviesById.values())) {
+                Integer releaseYear = sdf.parse(mv.getReleaseDate()).getYear() + 1900;
+                if (releaseYear >= startYear && releaseYear <= endYear)
+                    output.add(mv);
+            }
+            return output;
+        }catch (Exception e){
+            System.out.println(e.getStackTrace());
+            return null;
+        }
     }
 }

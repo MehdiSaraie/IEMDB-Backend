@@ -31,10 +31,6 @@ public class User {
         return email.equals(that.email);
     }
 
-    public String getEmail() {
-        return this.email;
-    }
-
     public void addToWatchList(Integer movieId, Integer ageLimit) throws Exception {
         if (userWatchList == null)
             userWatchList = new ArrayList<>();
@@ -58,12 +54,29 @@ public class User {
         userWatchList.remove(movieId);
     }
 
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getPassword() { return password; }
+
+    public String getName() { return this.name; }
+
+    public String getNickname() { return this.nickname; }
+
+    public String getBirthDate() { return this.birthDate; }
+
     public List<Integer> getWatchList() { return userWatchList; }
 
-    public long getAge() throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date d1 = sdf.parse(birthDate);
-        Date d2 = sdf.parse(sdf.format(new Date()));
-        return d2.getYear() - d1.getYear();
+    public long getAge() {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date d1 = sdf.parse(birthDate);
+            Date d2 = sdf.parse(sdf.format(new Date()));
+            return d2.getYear() - d1.getYear();
+        }catch (Exception e){
+            System.out.println(e.getStackTrace());
+            return 0;
+        }
     }
 }

@@ -8,5 +8,10 @@ public class ActorDB {
     private Map<Integer, Actor> actorsById = new HashMap<>();
 
     public void addActor(Actor actor) { actorsById.put(actor.getId(), actor); }
+
+    public Actor findActor(Integer id) {
+        return actorsById.get(id);
+    }
+
     public boolean actorExists(int id) { return actorsById.containsKey(id); }
 }
