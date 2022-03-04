@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LoadBalancer {
+public class IEMDB {
     private UserDB userDB = new UserDB();
     private MovieDB movieDB = new MovieDB();
     private ActorDB actorDB = new ActorDB();
@@ -63,6 +63,20 @@ public class LoadBalancer {
             throw new UserNotFoundException();
 
         Comment tempCM = new Comment(uniqueCommentID, userEmail, movieId, text);
+        tempMovie.addComment(tempCM);
+        commentDB.addComment(tempCM);
+        uniqueCommentID += 1;
+    }
+    public void addComment(Comment comment) throws Exception {
+        Movie tempMovie = movieDB.getMovieById(comment.getMovieId());
+        if (tempMovie == null)
+            throw new MovieNotFoundException();
+
+        User tempUser = userDB.getUserByEmail(comment.getUserEmail());
+        if (tempUser == null)
+            throw new UserNotFoundException();
+
+        Comment tempCM = new Comment(uniqueCommentID, comment.getUserEmail(), comment.getMovieId(), comment.getText());
         tempMovie.addComment(tempCM);
         commentDB.addComment(tempCM);
         uniqueCommentID += 1;

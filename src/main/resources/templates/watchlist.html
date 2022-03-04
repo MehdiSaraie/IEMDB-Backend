@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WatchList</title>
+    <style>
+        li {
+        	padding: 5px
+        }
+        table{
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <ul>
+        <li id="name">name: Sara</li>
+        <li id="nickname">nickname: @sara</li>
+    </ul>
+    <table>
+        <tr>
+            <th>Movie</th>
+            <th>releaseDate</th> 
+            <th>director</th> 
+            <th>genres</th> 
+            <th>imdb Rate</th> 
+            <th>rating</th> 
+            <th>duration</th> 
+            <th></th>
+            <th></th>
+        </tr>
+        <tr>
+            <th>Fight Club</th>
+            <th>1999-11-11</th> 
+            <th>David Fincher</th> 
+            <th>Drama</th> 
+            <th>8.8</th> 
+            <th>8.8</th> 
+            <th>139</th> 
+            <td><a href="/movies/01">Link</a></td>
+            <td>        
+                <form action="" method="POST" >
+                    <input id="form_movie_id" type="hidden" name="movie_id" value="01">
+                    <button type="submit">Remove</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <th>Catch Me If You Can</th> 
+            <th>2002-12-25</th> 
+            <th>Steven Spielberg</th> 
+            <th>Drama, Crime, Biography</th> 
+            <th>8.1</th> 
+            <th>8</th> 
+            <th>141</th>  
+            <td><a href="/movies/02">Link</a></td>
+            <td>        
+                <form action="" method="POST" >
+                    <input id="form_movie_id" type="hidden" name="movie_id" value="02">
+                    <button type="submit">Remove</button>
+                </form>
+            </td>
+
+        </tr>
+        <tr>
+            <th>War for the Planet of the Apes</th>
+            <th>2017-07-14</th> 
+            <th>Matt Reeves</th> 
+            <th>Drama, Action, Adventure</th> 
+            <th>7.4</th> 
+            <th>8</th> 
+            <th>140</th> 
+            <td><a href="/movies/03">Link</a></td>
+            <td>        
+                <form action="" method="POST" >
+                    <input id="form_movie_id" type="hidden" name="movie_id" value="03">
+                    <button type="submit">Remove</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

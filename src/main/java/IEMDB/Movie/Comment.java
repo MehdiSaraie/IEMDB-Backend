@@ -22,17 +22,26 @@ public class Comment {
         this.movieId = movieId;
         this.userEmail = userEmail;
         this.writingTime = new Date();
-
-//        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-//        System.out.println(formatter.format(writingTime));
     }
 
     public Integer getId() {
         return this.id;
     }
 
+    public String getText() {
+        return this.text;
+    }
+
     public Integer getMovieId() {
         return this.movieId;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public Date getWritingTime() {
+        return writingTime;
     }
 
     public void addVote(String userEmail, Integer vote) {

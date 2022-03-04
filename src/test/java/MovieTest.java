@@ -1,10 +1,10 @@
 import IEMDB.Exception.*;
-import IEMDB.LoadBalancer;
+import IEMDB.IEMDB;
 import IEMDB.Movie.*;
 import IEMDB.User.User;
 
 import org.json.JSONObject;
-import org.junit.AfterClass;
+
 import static org.junit.Assert.*;
 
 import org.junit.Before;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MovieTest {
-    static LoadBalancer lB = new LoadBalancer();
+    static IEMDB lB = new IEMDB();
     static User user1, user2;
     static Actor actor1, actor2, actor3;
     static Movie movie;

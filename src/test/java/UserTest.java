@@ -1,5 +1,5 @@
 import IEMDB.Exception.*;
-import IEMDB.LoadBalancer;
+import IEMDB.IEMDB;
 import IEMDB.Movie.*;
 import IEMDB.User.User;
 
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class UserTest {
-    static LoadBalancer lB = new LoadBalancer();
+    static IEMDB lB = new IEMDB();
     static User user;
     static Actor actor1, actor2, actor3;
     static Movie movie;
