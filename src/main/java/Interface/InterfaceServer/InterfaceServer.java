@@ -57,6 +57,205 @@ public class InterfaceServer {
 
     }
 
+    public void runServer(final int port) throws Exception {
+        app = Javalin.create().start(port);
+        app.get("/movies", ctx -> {
+            try {
+                ctx.html(generateMoviesPage(iemdb.getMoviesList()));
+            }catch (ActorNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e) {
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
+            }
+        });
+
+        app.get("movies/{movieId}", ctx -> {
+            try {
+                ctx.html(generateMoviePage(Integer.valueOf(ctx.pathParam("movieId"))));
+            }catch (MovieNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (ActorNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
+            }
+        });
+
+        app.get("actors/{actorId}", ctx -> {
+            try {
+                ctx.html(generateActorPage(Integer.valueOf(ctx.pathParam("actorId"))));
+            }catch (ActorNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
+            }
+        });
+
+        app.get("watchlist/{userId}", ctx -> {
+            try {
+                ctx.html(generateWatchListPage(ctx.pathParam("userId")));
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
+            }
+        });
+
+        app.post("watchlist/{movieId}", ctx -> {
+            try {
+                iemdb.addMovieToWatchList(ctx.formParam("userId"), Integer.valueOf(ctx.pathParam("movieId")));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (MovieNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
+            }
+        });
+
+        app.get("watchlist/{userId}/{movieId}", ctx -> {
+            try {
+                iemdb.addMovieToWatchList(ctx.pathParam("userId"), Integer.valueOf(ctx.pathParam("movieId")));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (MovieNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
+            }
+        });
+
+        app.post("watchlist/{userId}/{movieId}", ctx -> {
+            try {
+                iemdb.addMovieToWatchList(ctx.pathParam("userId"), Integer.valueOf(ctx.pathParam("movieId")));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (MovieNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
+            }
+        });
+
+        app.get("rateMovie/{userId}/{movieId}/{rate}", ctx -> {
+            try {
+                iemdb.addRateToMovie(new Rate(
+                        ctx.pathParam("userId"),
+                        Integer.valueOf(ctx.pathParam("movieId")),
+                        Integer.valueOf(ctx.pathParam("rate"))));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (MovieNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
+            }
+        });
+
+        app.post("rateMovie", ctx -> {
+            try {
+                iemdb.addRateToMovie(new Rate(
+                        ctx.formParam("userId"),
+                        Integer.valueOf(ctx.formParam("movieId")),
+                        Integer.valueOf(ctx.formParam("rate"))));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (MovieNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
+            }
+        });
+
+        app.get("voteComment/{userId}/{commentId}/{rate}", ctx -> {
+            try {
+                iemdb.addVoteToComment(
+                        ctx.pathParam("userId"),
+                        Integer.valueOf(ctx.pathParam("commentId")),
+                        Integer.valueOf(ctx.pathParam("rate")));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (CommentNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
+            }
+        });
+
+        app.post("voteComment", ctx -> {
+            try {
+                iemdb.addVoteToComment(
+                        ctx.formParam("userId"),
+                        Integer.valueOf(ctx.formParam("commentId")),
+                        Integer.valueOf(ctx.formParam("rate")));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (CommentNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
+            }
+        });
+
+        app.post("removefromwatchlist", ctx -> {
+            try {
+                System.out.println(ctx.formParam("userId") + Integer.valueOf(ctx.formParam("movieId")));
+                iemdb.removeMovieFromWatchList(ctx.formParam("userId"), Integer.valueOf(ctx.formParam("movieId")));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (MovieNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
+            }
+        });
+
+        app.get("/movies/search/{startYear}/{endYear}", ctx -> {
+            try {
+                ctx.html(generateMoviesPage(iemdb.getMoviesByReleaseDate(
+                        Integer.valueOf(ctx.pathParam("startYear")), Integer.valueOf(ctx.pathParam("endYear"))
+                )));
+            }catch (ActorNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e) {
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
+            }
+        });
+
+        app.get("/movies/search/{genre}", ctx -> {
+            try {
+                ctx.html(generateMoviesPage(iemdb.getMoviesByGenre(ctx.pathParam("genre"))));
+            }catch (ActorNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e) {
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
+            }
+        });
+
+    }
+
     public String generateMoviesPage(List<Movie> movies) throws Exception{
         Document doc = templates.get("movies");
         Element table = doc.body().getElementsByTag("table").first();
@@ -80,7 +279,7 @@ public class InterfaceServer {
                     "<td>" + movie.getDuration() + "</td>" +
                     "<td>" + movie.getAgeLimit() + "</td>" +
                     "<td><a href=/movies/" + movie.getId() + ">Link</a></td>" +
-                "</tr>";
+                    "</tr>";
         }
         table.html(tbody.child(0).outerHtml() + movieRows);
         return doc.html();
@@ -110,11 +309,11 @@ public class InterfaceServer {
 
         String rateMovieFormString =
                 "<input id='form_movie_id' type='hidden' name='movieId' value='" + movie.getId() + "' />" +
-                "<label>Your ID(email):</label>" +
-                "<input type='text' name='userId' value='' />" +
-                "<label> Rate(between 1 and 10):</label>" +
-                "<input type='number' name='rate' value='' min='1' max='10' />" +
-                "<button type='submit'>Rate</button>";
+                        "<label>Your ID(email):</label>" +
+                        "<input type='text' name='userId' value='' />" +
+                        "<label> Rate(between 1 and 10):</label>" +
+                        "<input type='number' name='rate' value='' min='1' max='10' />" +
+                        "<button type='submit'>Rate</button>";
 
         rateMovieForm.html(rateMovieFormString);
 
@@ -122,9 +321,9 @@ public class InterfaceServer {
         watchlistForm.attr("action", "/watchlist/" + movie.getId().toString());
 
         String watchlistFormString =
-            "<label>Your ID(email):</label>" +
-            "<input type='text' name='userId' value='' />" +
-            "<button type='submit'>Add to WatchList</button>";
+                "<label>Your ID(email):</label>" +
+                        "<input type='text' name='userId' value='' />" +
+                        "<button type='submit'>Add to WatchList</button>";
 
         watchlistForm.html(watchlistFormString);
 
@@ -136,229 +335,30 @@ public class InterfaceServer {
                     "<td>" + iemdb.findUser(comment.getUserEmail()).getNickname() + "</td>" +
                     "<td>" + comment.getText() + "</td>" +
                     "<td>" +
-                        "<form action='/rateComment' method='POST'>" +
-                            "<label for=''>" + comment.getLikesCount() + "</label>" +
-                            "<input id='form_comment_id' type='hidden' name='commentId' value='" + comment.getId() + "' />" +
-                            "<input id='form_rate_id' type='hidden' name='rate' value='1' />" +
-                            "<label>Your ID(email):</label>" +
-                            "<input type='text' name='userId' value='' />" +
-                            "<button type='submit'>like</button>" +
-                        "</form>" +
+                    "<form action='/voteComment' method='POST'>" +
+                    "<label for=''>" + comment.getLikesCount() + "</label>" +
+                    "<input id='form_comment_id' type='hidden' name='commentId' value='" + comment.getId() + "' />" +
+                    "<input id='form_rate_id' type='hidden' name='rate' value='1' />" +
+                    "<label>Your ID(email):</label>" +
+                    "<input type='text' name='userId' value='' />" +
+                    "<button type='submit'>like</button>" +
+                    "</form>" +
                     "</td>" +
                     "<td>" +
-                        "<form action='/rateComment' method='POST'>" +
-                            "<label for=''>" + comment.getDislikesCount() + "</label>" +
-                            "<input id='form_comment_id' type='hidden' name='commentId' value='" + comment.getId() + "' />" +
-                            "<input id='form_rate_id' type='hidden' name='rate' value='-1' />" +
-                            "<label>Your ID(email):</label>" +
-                            "<input type='text' name='userId' value='' />" +
-                            "<button type='submit'>dislike</button>" +
-                        "</form>" +
+                    "<form action='/voteComment' method='POST'>" +
+                    "<label for=''>" + comment.getDislikesCount() + "</label>" +
+                    "<input id='form_comment_id' type='hidden' name='commentId' value='" + comment.getId() + "' />" +
+                    "<input id='form_rate_id' type='hidden' name='rate' value='-1' />" +
+                    "<label>Your ID(email):</label>" +
+                    "<input type='text' name='userId' value='' />" +
+                    "<button type='submit'>dislike</button>" +
+                    "</form>" +
                     "</td>" +
-                "</tr";
+                    "</tr";
         }
         table.html(tbody.child(0).outerHtml() + commentRows);
 
         return doc.html();
-    }
-
-    public void runServer(final int port) throws Exception {
-        app = Javalin.create().start(port);
-        app.get("/movies", ctx -> {
-            try {
-                ctx.html(generateMoviesPage(iemdb.getMoviesList()));
-            }catch (ActorNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (Exception e) {
-                System.out.println(e.getMessage());
-                ctx.html(templates.get("403").html()).status(403);
-            }
-        });
-
-
-//        app.get("/movies", ctx -> ctx.html(readTemplateFile("movies.html").html()));
-
-//        app.get("restaurants/near/", ctx -> {
-//            try {
-//                ctx.html(generateGetNearRestaurantsPage());
-//            }catch (Exception e){
-//                System.out.println(e.getMessage());
-//                ctx.status(502);
-//            }
-//        });
-
-        app.get("movies/{movieId}", ctx -> {
-            try {
-                ctx.html(generateMoviePage(Integer.valueOf(ctx.pathParam("movieId"))));
-            }catch (MovieNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (ActorNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (Exception e){
-                System.out.println(e.getMessage());
-                ctx.html(templates.get("403").html()).status(403);
-            }
-        });
-
-        app.get("actors/{actorId}", ctx -> {
-            try {
-                ctx.html(generateActorPage(Integer.valueOf(ctx.pathParam("actorId"))));
-            }catch (ActorNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (Exception e){
-                System.out.println(e.getMessage());
-                ctx.status(502).result(":| " + e.getMessage());
-            }
-        });
-
-        app.get("watchlist/{userId}", ctx -> {
-            try {
-                ctx.html(generateWatchListPage(ctx.pathParam("userId")));
-            }catch (UserNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (Exception e){
-                System.out.println(e.getMessage());
-                ctx.status(502).result(":| " + e.getMessage());
-            }
-        });
-
-        app.post("watchlist/{movieId}", ctx -> {
-            try {
-                iemdb.addMovieToWatchList(ctx.formParam("userId"), Integer.valueOf(ctx.pathParam("movieId")));
-                ctx.html(templates.get("200").html()).status(200);
-            }catch (MovieNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (UserNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (AgeLimitErrorException e) {
-                ctx.html(templates.get("403").html()).status(403);
-            }catch (Exception e){
-                System.out.println(e.getMessage());
-                ctx.status(502).result(":| " + e.getMessage());
-            }
-        });
-
-        app.post("watchlist/{userId}/{movieId}", ctx -> {
-            try {
-                iemdb.addMovieToWatchList(ctx.pathParam("userId"), Integer.valueOf(ctx.pathParam("movieId")));
-                ctx.html(templates.get("200").html()).status(200);
-            }catch (MovieNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (UserNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (AgeLimitErrorException e) {
-                ctx.html(templates.get("403").html()).status(403);
-            }catch (Exception e){
-                System.out.println(e.getMessage());
-                ctx.status(502).result(":| " + e.getMessage());
-            }
-        });
-
-        app.post("rateMovie", ctx -> {
-            try {
-                iemdb.addRateToMovie(new Rate(
-                        ctx.formParam("userId"),
-                        Integer.valueOf(ctx.formParam("movieId")),
-                        Integer.valueOf(ctx.formParam("rate"))));
-                ctx.html(templates.get("200").html()).status(200);
-            }catch (MovieNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (UserNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (InvalidRateScoreException e) {
-                ctx.html(templates.get("403").html()).status(403);
-            }catch (Exception e){
-                System.out.println(e.getMessage());
-                ctx.status(502).result(":| " + e.getMessage());
-            }
-        });
-
-        app.post("rateComment", ctx -> {
-            try {
-                iemdb.addVoteToComment(
-                        ctx.formParam("userId"),
-                        Integer.valueOf(ctx.formParam("commentId")),
-                        Integer.valueOf(ctx.formParam("rate")));
-                ctx.html(templates.get("200").html()).status(200);
-            }catch (CommentNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (UserNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (InvalidVoteValueException e) {
-                ctx.html(templates.get("403").html()).status(403);
-            }catch (Exception e){
-                System.out.println(e.getMessage());
-                ctx.status(502).result(":| " + e.getMessage());
-            }
-        });
-
-        app.post("removefromwatchlist", ctx -> {
-            try {
-                System.out.println(ctx.formParam("userId") + Integer.valueOf(ctx.formParam("movieId")));
-                iemdb.removeMovieFromWatchList(ctx.formParam("userId"), Integer.valueOf(ctx.formParam("movieId")));
-                ctx.html(templates.get("200").html()).status(200);
-            }catch (MovieNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (UserNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (Exception e){
-                System.out.println(e.getMessage());
-                ctx.status(502).result(":| " + e.getMessage());
-            }
-        });
-
-        app.get("/movies/search/{startYear}/{endYear}", ctx -> {
-            try {
-                ctx.html(generateMoviesPage(iemdb.getMoviesByReleaseDate(
-                        Integer.valueOf(ctx.pathParam("startYear")), Integer.valueOf(ctx.pathParam("endYear"))
-                )));
-            }catch (ActorNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (Exception e) {
-                System.out.println(e.getMessage());
-                ctx.html(templates.get("403").html()).status(403);
-            }
-        });
-
-        app.get("/movies/search/{genre}", ctx -> {
-            try {
-                ctx.html(generateMoviesPage(iemdb.getMoviesByGenre(ctx.pathParam("genre"))));
-            }catch (ActorNotFoundException e) {
-                ctx.html(templates.get("404").html()).status(404);
-            }catch (Exception e) {
-                System.out.println(e.getMessage());
-                ctx.html(templates.get("403").html()).status(403);
-            }
-        });
-//
-//        app.post("/charge", ctx -> {
-//            try {
-//                String creditValue = ctx.formParam("credit");
-//                if (!creditValue.isEmpty())
-//                    iemdb.chargeUserCredit(Double.parseDouble(creditValue));
-//                ctx.result("user credit updated");
-//            } catch (Exception exception) {
-//                System.out.println(exception.getMessage());
-//                ctx.result(exception.getMessage());
-//            }
-////            ctx.redirect("profile/ekhamespanah@yahoo.com");
-//        });
-//
-//        app.post("/addToCart/:restaurantId", ctx -> {
-//            String foodName = "", restaurantId = "";
-//            try {
-//                foodName = ctx.formParam("foodName");
-//                restaurantId = ctx.pathParam("restaurantId");
-//                iemdb.addToCartByRestaurantId(restaurantId, foodName);
-//                ctx.status(200).result("Added to cart");
-//                System.out.println(iemdb.getCart().getSize());
-//            } catch (Exception exception) {
-//                System.out.println(exception.getMessage());
-//                ctx.status(403).result(exception.getMessage());
-//            }
-////            ctx.redirect("/restaurants/" + restaurantId);
-//        });
-
     }
 
     private String generateWatchListPage(String userId) throws Exception {
