@@ -1,7 +1,7 @@
 package Interface.InterfaceServer;
 
-import IEMDB.Exception.ActorNotFoundException;
-import IEMDB.Exception.MovieNotFoundException;
+import IEMDB.Exception.*;
+import IEMDB.Movie.Rate;
 import Interface.HTTPRequestHandler.HTTPRequestHandler;
 import IEMDB.IEMDB;
 import IEMDB.Movie.Actor;
@@ -105,6 +105,29 @@ public class InterfaceServer {
         doc.getElementById("duration").html("duration: " + movie.getDuration().toString());
         doc.getElementById("ageLimit").html("ageLimit: " + movie.getAgeLimit().toString());
 
+        Element rateMovieForm = doc.body().getElementsByTag("form").get(0);
+        rateMovieForm.attr("action", "/rateMovie");
+
+        String rateMovieFormString =
+                "<input id='form_movie_id' type='hidden' name='movieId' value='" + movie.getId() + "' />" +
+                "<label>Your ID(email):</label>" +
+                "<input type='text' name='userId' value='' />" +
+                "<label> Rate(between 1 and 10):</label>" +
+                "<input type='number' name='rate' value='' min='1' max='10' />" +
+                "<button type='submit'>Rate</button>";
+
+        rateMovieForm.html(rateMovieFormString);
+
+        Element watchlistForm = doc.body().getElementsByTag("form").get(1);
+        watchlistForm.attr("action", "/watchlist/" + movie.getId().toString());
+
+        String watchlistFormString =
+            "<label>Your ID(email):</label>" +
+            "<input type='text' name='userId' value='' />" +
+            "<button type='submit'>Add to WatchList</button>";
+
+        watchlistForm.html(watchlistFormString);
+
         Element table = doc.body().getElementsByTag("table").first();
         Element tbody = table.child(0);
         String commentRows = "";
@@ -113,17 +136,23 @@ public class InterfaceServer {
                     "<td>" + iemdb.findUser(comment.getUserEmail()).getNickname() + "</td>" +
                     "<td>" + comment.getText() + "</td>" +
                     "<td>" +
-                        "<form action=\"\" method=\"POST\">" +
-                            "<label for=\"\">" + comment.getLikesCount() + "</label>" +
-                            "<input id=\"form_comment_id\" type=\"hidden\" name=\"comment_id\" value=" + comment.getLikesCount() + "/>" +
-                            "<button type=\"submit\">like</button>" +
+                        "<form action='/rateComment' method='POST'>" +
+                            "<label for=''>" + comment.getLikesCount() + "</label>" +
+                            "<input id='form_comment_id' type='hidden' name='commentId' value='" + comment.getId() + "' />" +
+                            "<input id='form_rate_id' type='hidden' name='rate' value='1' />" +
+                            "<label>Your ID(email):</label>" +
+                            "<input type='text' name='userId' value='' />" +
+                            "<button type='submit'>like</button>" +
                         "</form>" +
                     "</td>" +
                     "<td>" +
-                        "<form action=\"\" method=\"POST\">" +
-                            "<label for=\"\">" + comment.getDislikesCount() + "</label>" +
-                            "<input id=\"form_comment_id\" type=\"hidden\" name=\"comment_id\" value=" + comment.getDislikesCount() + "/>" +
-                            "<button type=\"submit\">dislike</button>" +
+                        "<form action='/rateComment' method='POST'>" +
+                            "<label for=''>" + comment.getDislikesCount() + "</label>" +
+                            "<input id='form_comment_id' type='hidden' name='commentId' value='" + comment.getId() + "' />" +
+                            "<input id='form_rate_id' type='hidden' name='rate' value='-1' />" +
+                            "<label>Your ID(email):</label>" +
+                            "<input type='text' name='userId' value='' />" +
+                            "<button type='submit'>dislike</button>" +
                         "</form>" +
                     "</td>" +
                 "</tr";
@@ -146,6 +175,7 @@ public class InterfaceServer {
             }
         });
 
+
 //        app.get("/movies", ctx -> ctx.html(readTemplateFile("movies.html").html()));
 
 //        app.get("restaurants/near/", ctx -> {
@@ -167,6 +197,113 @@ public class InterfaceServer {
             }catch (Exception e){
                 System.out.println(e.getMessage());
                 ctx.html(templates.get("403").html()).status(403);
+            }
+        });
+
+        app.get("actors/{actorId}", ctx -> {
+            try {
+                ctx.html(generateActorPage(Integer.valueOf(ctx.pathParam("actorId"))));
+            }catch (ActorNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.status(502).result(":| " + e.getMessage());
+            }
+        });
+
+        app.get("watchlist/{userId}", ctx -> {
+            try {
+                ctx.html(generateWatchListPage(ctx.pathParam("userId")));
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.status(502).result(":| " + e.getMessage());
+            }
+        });
+
+        app.post("watchlist/{movieId}", ctx -> {
+            try {
+                iemdb.addMovieToWatchList(ctx.formParam("userId"), Integer.valueOf(ctx.pathParam("movieId")));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (MovieNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (AgeLimitErrorException e) {
+                ctx.html(templates.get("403").html()).status(403);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.status(502).result(":| " + e.getMessage());
+            }
+        });
+
+        app.post("watchlist/{userId}/{movieId}", ctx -> {
+            try {
+                iemdb.addMovieToWatchList(ctx.pathParam("userId"), Integer.valueOf(ctx.pathParam("movieId")));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (MovieNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (AgeLimitErrorException e) {
+                ctx.html(templates.get("403").html()).status(403);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.status(502).result(":| " + e.getMessage());
+            }
+        });
+
+        app.post("rateMovie", ctx -> {
+            try {
+                iemdb.addRateToMovie(new Rate(
+                        ctx.formParam("userId"),
+                        Integer.valueOf(ctx.formParam("movieId")),
+                        Integer.valueOf(ctx.formParam("rate"))));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (MovieNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (InvalidRateScoreException e) {
+                ctx.html(templates.get("403").html()).status(403);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.status(502).result(":| " + e.getMessage());
+            }
+        });
+
+        app.post("rateComment", ctx -> {
+            try {
+                iemdb.addVoteToComment(
+                        ctx.formParam("userId"),
+                        Integer.valueOf(ctx.formParam("commentId")),
+                        Integer.valueOf(ctx.formParam("rate")));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (CommentNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (InvalidVoteValueException e) {
+                ctx.html(templates.get("403").html()).status(403);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.status(502).result(":| " + e.getMessage());
+            }
+        });
+
+        app.post("removefromwatchlist", ctx -> {
+            try {
+                System.out.println(ctx.formParam("userId") + Integer.valueOf(ctx.formParam("movieId")));
+                iemdb.removeMovieFromWatchList(ctx.formParam("userId"), Integer.valueOf(ctx.formParam("movieId")));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (MovieNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.status(502).result(":| " + e.getMessage());
             }
         });
 
@@ -222,6 +359,69 @@ public class InterfaceServer {
 ////            ctx.redirect("/restaurants/" + restaurantId);
 //        });
 
+    }
+
+    private String generateWatchListPage(String userId) throws Exception {
+        Document doc = templates.get("watchlist");
+        User user = iemdb.findUser(userId);
+        doc.getElementById("name").html("name: " + user.getName());
+        doc.getElementById("nickname").html("nickname: " + user.getNickname());
+
+        List<Movie> watchlist = iemdb.getWatchList(userId);
+
+        Element table = doc.body().getElementsByTag("table").first();
+        Element tbody = table.child(0);
+        String movieRows = "";
+
+        for (Movie movie : watchlist){
+            movieRows += "<tr>" +
+                    "<td>" + movie.getName() + "</td>" +
+                    "<td>" + movie.getReleaseDate() + "</td>" +
+                    "<td>" + movie.getDirector() + "</td>" +
+                    "<td>" + movie.getGenres() + "</td>" +
+                    "<td>" + movie.getImdbRate() + "</td>" +
+                    "<td>" + movie.getRating() + "</td>" +
+                    "<td>" + movie.getDuration() + "</td>" +
+                    "<td><a href=/movies/" + movie.getId() + ">Link</a></td>" +
+                    "<td>" +
+                        "<form action='/removefromwatchlist' method='POST'>" +
+                            "<input id='form_user_id' type='hidden' name='userId' value='" + userId + "' />" +
+                            "<input id='form_movie_id' type='hidden' name='movieId' value='" + movie.getId() + "' />" +
+                            "<button type='submit'>Remove</button>" +
+                        "</form>" +
+                    "</td>" +
+                    "</tr";
+        }
+        table.html(tbody.child(0).outerHtml() + movieRows);
+
+        return doc.html();
+    }
+
+    private String generateActorPage(Integer actorId) throws Exception {
+        Document doc = templates.get("actor");
+        Actor actor = iemdb.findActor(actorId);
+        doc.getElementById("name").html("name: " + actor.getName());
+        doc.getElementById("birthDate").html("birthDate: " + actor.getBirthDate());
+        doc.getElementById("nationality").html("nationality: " + actor.getNationality());
+        List<Movie> actorMovies = iemdb.getMoviesByActor(actorId);
+        doc.getElementById("tma").html("Total movies acted in: " + actorMovies.size());
+
+
+        Element table = doc.body().getElementsByTag("table").first();
+        Element tbody = table.child(0);
+        String movieRows = "";
+
+        for (Movie movie : actorMovies){
+            movieRows += "<tr>" +
+                    "<td>" + movie.getName() + "</td>" +
+                    "<td>" + movie.getImdbRate() + "</td>" +
+                    "<td>" + movie.getRating() + "</td>" +
+                    "<td><a href=/movies/" + movie.getId() + ">Link</a></td>" +
+                    "</tr";
+        }
+        table.html(tbody.child(0).outerHtml() + movieRows);
+
+        return doc.html();
     }
 
     private Document readTemplateFile(String fileName) throws Exception{

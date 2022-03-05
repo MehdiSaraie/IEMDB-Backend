@@ -6,6 +6,7 @@ import IEMDB.User.User;
 import IEMDB.User.UserDB;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,35 +152,28 @@ public class IEMDB {
         return movieDB.getMoviesByGenre(genre);
     }
 
+    public List<Movie> getMoviesByActor(Integer actorId) {
+        return movieDB.getMoviesByActor(actorId);
+    }
+
     public List<Movie> getMoviesByReleaseDate(Integer startYear, Integer endYear) {
         return movieDB.getMoviesByReleaseDate(startYear, endYear);
     }
 
-    public String getWatchList(String userEmail) throws Exception{
+    public List<Movie> getWatchList(String userEmail) throws Exception{
         User tempUser = userDB.findUser(userEmail);
         if (tempUser == null)
             throw new UserNotFoundException();
 
-        List<Integer> watchList = tempUser.getWatchList();
+        List<Integer> watchListIds = tempUser.getWatchList();
+        List<Movie> watchList = new ArrayList<>();
 
-        boolean comma = false;
-        String output = "[";
-        for (Integer i : watchList) {
-            if (comma)
-                output += ", ";
-            Movie tempMovie = movieDB.findMovie(i);
-            String movieDetail = tempMovie.getSmallData();
-            output += movieDetail;
-
-            comma = true;
+        if (watchListIds != null)
+        for (Integer movieId : watchListIds) {
+            watchList.add(movieDB.findMovie(movieId));
         }
-        output += "]";
 
-        Map<String, String> elements = new HashMap<>();
-        elements.put("WatchList", output);
-        JSONObject json = new JSONObject(elements);
-
-        return json.toString();
+        return watchList;
     }
 
     public Comment getComment(Integer commentId) {
