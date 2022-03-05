@@ -151,6 +151,10 @@ public class IEMDB {
         return movieDB.getMoviesByGenre(genre);
     }
 
+    public List<Movie> getMoviesByActor(Integer actorId) {
+        return movieDB.getMoviesByActor(actorId);
+    }
+
     public List<Movie> getMoviesByReleaseDate(Integer startYear, Integer endYear) {
         return movieDB.getMoviesByReleaseDate(startYear, endYear);
     }

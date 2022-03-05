@@ -31,6 +31,16 @@ public class MovieDB {
         return output;
     }
 
+    public List<Movie> getMoviesByActor(Integer actorId) {
+        List<Movie> output = new ArrayList<>();
+        for (Movie mv : new ArrayList<>(moviesById.values())) {
+            List<Integer> actorIds = mv.getCast();
+            if (actorIds != null && actorIds.contains(actorId))
+                output.add(mv);
+        }
+        return output;
+    }
+
     public List<Movie> getMoviesByReleaseDate(Integer startYear, Integer endYear){
         try {
             List<Movie> output = new ArrayList<>();

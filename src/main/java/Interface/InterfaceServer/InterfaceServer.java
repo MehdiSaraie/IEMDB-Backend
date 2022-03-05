@@ -143,6 +143,7 @@ public class InterfaceServer {
             }
         });
 
+
 //        app.get("/movies", ctx -> ctx.html(readTemplateFile("movies.html").html()));
 
 //        app.get("restaurants/near/", ctx -> {
@@ -159,6 +160,17 @@ public class InterfaceServer {
                 ctx.html(generateMoviePage(Integer.valueOf(ctx.pathParam("movieId"))));
             }catch (MovieNotFoundException e) {
                 ctx.html(templates.get("404").html()).status(404);
+            }catch (ActorNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.status(502).result(":| " + e.getMessage());
+            }
+        });
+
+        app.get("actors/{actorId}", ctx -> {
+            try {
+                ctx.html(generateActorPage(Integer.valueOf(ctx.pathParam("actorId"))));
             }catch (ActorNotFoundException e) {
                 ctx.html(templates.get("404").html()).status(404);
             }catch (Exception e){
@@ -213,6 +225,33 @@ public class InterfaceServer {
 ////            ctx.redirect("/restaurants/" + restaurantId);
 //        });
 
+    }
+
+    private String generateActorPage(Integer actorId) throws Exception {
+        Document doc = templates.get("actor");
+        Actor actor = iemdb.findActor(actorId);
+        doc.getElementById("name").html("name: " + actor.getName());
+        doc.getElementById("birthDate").html("birthDate: " + actor.getBirthDate());
+        doc.getElementById("nationality").html("nationality: " + actor.getNationality());
+        List<Movie> actorMovies = iemdb.getMoviesByActor(actorId);
+        doc.getElementById("tma").html("Total movies acted in: " + actorMovies.size());
+
+
+        Element table = doc.body().getElementsByTag("table").first();
+        Element tbody = table.child(0);
+        String movieRows = "";
+
+        for (Movie movie : actorMovies){
+            movieRows += "<tr>" +
+                    "<td>" + movie.getName() + "</td>" +
+                    "<td>" + movie.getImdbRate() + "</td>" +
+                    "<td>" + movie.getRating() + "</td>" +
+                    "<td><a href=/movies/" + movie.getId() + ">Link</a></td>" +
+                    "</tr";
+        }
+        table.html(tbody.child(0).outerHtml() + movieRows);
+
+        return doc.html();
     }
 
     private Document readTemplateFile(String fileName) throws Exception{
