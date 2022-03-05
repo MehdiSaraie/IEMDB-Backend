@@ -136,17 +136,23 @@ public class InterfaceServer {
                     "<td>" + iemdb.findUser(comment.getUserEmail()).getNickname() + "</td>" +
                     "<td>" + comment.getText() + "</td>" +
                     "<td>" +
-                        "<form action=\"\" method=\"POST\">" +
-                            "<label for=\"\">" + comment.getLikesCount() + "</label>" +
-                            "<input id=\"form_comment_id\" type=\"hidden\" name=\"comment_id\" value=" + comment.getLikesCount() + "/>" +
-                            "<button type=\"submit\">like</button>" +
+                        "<form action='/rateComment' method='POST'>" +
+                            "<label for=''>" + comment.getLikesCount() + "</label>" +
+                            "<input id='form_comment_id' type='hidden' name='commentId' value='" + comment.getId() + "' />" +
+                            "<input id='form_rate_id' type='hidden' name='rate' value='1' />" +
+                            "<label>Your ID(email):</label>" +
+                            "<input type='text' name='userId' value='' />" +
+                            "<button type='submit'>like</button>" +
                         "</form>" +
                     "</td>" +
                     "<td>" +
-                        "<form action=\"\" method=\"POST\">" +
-                            "<label for=\"\">" + comment.getDislikesCount() + "</label>" +
-                            "<input id=\"form_comment_id\" type=\"hidden\" name=\"comment_id\" value=" + comment.getDislikesCount() + "/>" +
-                            "<button type=\"submit\">dislike</button>" +
+                        "<form action='/rateComment' method='POST'>" +
+                            "<label for=''>" + comment.getDislikesCount() + "</label>" +
+                            "<input id='form_comment_id' type='hidden' name='commentId' value='" + comment.getId() + "' />" +
+                            "<input id='form_rate_id' type='hidden' name='rate' value='-1' />" +
+                            "<label>Your ID(email):</label>" +
+                            "<input type='text' name='userId' value='' />" +
+                            "<button type='submit'>dislike</button>" +
                         "</form>" +
                     "</td>" +
                 "</tr";
@@ -257,6 +263,25 @@ public class InterfaceServer {
             }catch (UserNotFoundException e) {
                 ctx.html(templates.get("404").html()).status(404);
             }catch (InvalidRateScoreException e) {
+                ctx.html(templates.get("403").html()).status(403);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.status(502).result(":| " + e.getMessage());
+            }
+        });
+
+        app.post("rateComment", ctx -> {
+            try {
+                iemdb.addVoteToComment(
+                        ctx.formParam("userId"),
+                        Integer.valueOf(ctx.formParam("commentId")),
+                        Integer.valueOf(ctx.formParam("rate")));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (CommentNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (InvalidVoteValueException e) {
                 ctx.html(templates.get("403").html()).status(403);
             }catch (Exception e){
                 System.out.println(e.getMessage());
