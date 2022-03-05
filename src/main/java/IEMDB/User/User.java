@@ -13,7 +13,7 @@ public class User {
     private String name;
     private String nickname;
     private String birthDate;
-    private List<Integer> userWatchList = new ArrayList<>();
+    private List<Integer> userWatchList;
 
     public User(String email, String password, String nickname, String name, String birthDate) {
         this.email = email;
