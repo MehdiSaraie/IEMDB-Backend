@@ -234,6 +234,21 @@ public class InterfaceServer {
             }
         });
 
+        app.post("removefromwatchlist", ctx -> {
+            try {
+                System.out.println(ctx.formParam("userId") + Integer.valueOf(ctx.formParam("movieId")));
+                iemdb.removeMovieFromWatchList(ctx.formParam("userId"), Integer.valueOf(ctx.formParam("movieId")));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (MovieNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.status(502).result(":| " + e.getMessage());
+            }
+        });
+
         app.get("/movies/search/{startYear}/{endYear}", ctx -> {
             try {
                 ctx.html(generateMoviesPage(iemdb.getMoviesByReleaseDate(
@@ -305,9 +320,10 @@ public class InterfaceServer {
                     "<td>" + movie.getDuration() + "</td>" +
                     "<td><a href=/movies/" + movie.getId() + ">Link</a></td>" +
                     "<td>" +
-                        "<form action=\"\" method=\"POST\">" +
-                        "<input id=\"form_movie_id\" type=\"hidden\" name=\"movie_id\" value=\"01\" + \"/>" +
-                        "<button type=\"submit\">Remove</button>" +
+                        "<form action='/removefromwatchlist' method='POST'>" +
+                            "<input id='form_user_id' type='hidden' name='userId' value='" + userId + "' />" +
+                            "<input id='form_movie_id' type='hidden' name='movieId' value='" + movie.getId() + "' />" +
+                            "<button type='submit'>Remove</button>" +
                         "</form>" +
                     "</td>" +
                     "</tr";
