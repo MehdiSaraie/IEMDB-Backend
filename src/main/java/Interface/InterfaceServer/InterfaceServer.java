@@ -1,9 +1,7 @@
 package Interface.InterfaceServer;
 
-import IEMDB.Exception.ActorNotFoundException;
-import IEMDB.Exception.AgeLimitErrorException;
-import IEMDB.Exception.MovieNotFoundException;
-import IEMDB.Exception.UserNotFoundException;
+import IEMDB.Exception.*;
+import IEMDB.Movie.Rate;
 import Interface.HTTPRequestHandler.HTTPRequestHandler;
 import IEMDB.IEMDB;
 import IEMDB.Movie.Actor;
@@ -106,6 +104,19 @@ public class InterfaceServer {
         doc.getElementById("rating").html("rating: " + (movie.getRating() != null ? movie.getRating().toString() : "null"));
         doc.getElementById("duration").html("duration: " + movie.getDuration().toString());
         doc.getElementById("ageLimit").html("ageLimit: " + movie.getAgeLimit().toString());
+
+        Element rateMovieForm = doc.body().getElementsByTag("form").get(0);
+        rateMovieForm.attr("action", "/rateMovie");
+
+        String rateMovieFormString =
+                "<input id='form_movie_id' type='hidden' name='movieId' value='" + movie.getId() + "' />" +
+                "<label>Your ID(email):</label>" +
+                "<input type='text' name='userId' value='' />" +
+                "<label> Rate(between 1 and 10):</label>" +
+                "<input type='number' name='rate' value='' min='1' max='10' />" +
+                "<button type='submit'>Rate</button>";
+
+        rateMovieForm.html(rateMovieFormString);
 
         Element watchlistForm = doc.body().getElementsByTag("form").get(1);
         watchlistForm.attr("action", "/watchlist/" + movie.getId().toString());
@@ -227,6 +238,25 @@ public class InterfaceServer {
             }catch (UserNotFoundException e) {
                 ctx.html(templates.get("404").html()).status(404);
             }catch (AgeLimitErrorException e) {
+                ctx.html(templates.get("403").html()).status(403);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                ctx.status(502).result(":| " + e.getMessage());
+            }
+        });
+
+        app.post("rateMovie", ctx -> {
+            try {
+                iemdb.addRateToMovie(new Rate(
+                        ctx.formParam("userId"),
+                        Integer.valueOf(ctx.formParam("movieId")),
+                        Integer.valueOf(ctx.formParam("rate"))));
+                ctx.html(templates.get("200").html()).status(200);
+            }catch (MovieNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (UserNotFoundException e) {
+                ctx.html(templates.get("404").html()).status(404);
+            }catch (InvalidRateScoreException e) {
                 ctx.html(templates.get("403").html()).status(403);
             }catch (Exception e){
                 System.out.println(e.getMessage());
