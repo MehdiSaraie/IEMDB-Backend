@@ -140,6 +140,9 @@ public class InterfaceServer {
                 ctx.html(generateMoviesPage(iemdb.getMoviesList()));
             }catch (ActorNotFoundException e) {
                 ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e) {
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
             }
         });
 
@@ -163,7 +166,7 @@ public class InterfaceServer {
                 ctx.html(templates.get("404").html()).status(404);
             }catch (Exception e){
                 System.out.println(e.getMessage());
-                ctx.status(502).result(":| " + e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
             }
         });
 
@@ -174,6 +177,9 @@ public class InterfaceServer {
                 )));
             }catch (ActorNotFoundException e) {
                 ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e) {
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
             }
         });
 
@@ -182,6 +188,9 @@ public class InterfaceServer {
                 ctx.html(generateMoviesPage(iemdb.getMoviesByGenre(ctx.pathParam("genre"))));
             }catch (ActorNotFoundException e) {
                 ctx.html(templates.get("404").html()).status(404);
+            }catch (Exception e) {
+                System.out.println(e.getMessage());
+                ctx.html(templates.get("403").html()).status(403);
             }
         });
 //
