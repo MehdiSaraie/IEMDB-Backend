@@ -7,7 +7,7 @@
         <packaging>war</packaging>
       </options>
     </properties>
-    <root id="archive" name="IEMDB.war">
+    <root id="archive" name="ie_phase3-1.0-SNAPSHOT.war">
       <element id="artifact" artifact-name="iemdb:war exploded" />
     </root>
   </artifact>

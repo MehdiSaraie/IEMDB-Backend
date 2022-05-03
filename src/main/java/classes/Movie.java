@@ -16,12 +16,14 @@ public class Movie {
     private float imdbRate;
     private int duration;
     private int ageLimit;
+    private String image;
+    private String coverImage;
     private ArrayList<Comment> comments = new ArrayList<>();
     private float rating;
     private int ratingCount;
 
     public Movie(int id, String name, String summary, String releaseDate, String director, ArrayList<String> writers,
-                 ArrayList<String> genres, ArrayList<Integer> cast, float imdbRate, int duration, int ageLimit) {
+                 ArrayList<String> genres, ArrayList<Integer> cast, float imdbRate, int duration, int ageLimit, String image, String coverImage) {
         this.id = id;
         this.name = name;
         this.summary = summary;
@@ -33,6 +35,8 @@ public class Movie {
         this.imdbRate = imdbRate;
         this.duration = duration;
         this.ageLimit = ageLimit;
+        this.image = image;
+        this.coverImage = coverImage;
     }
 
     public Movie() {
@@ -155,6 +159,14 @@ public class Movie {
     public void setAgeLimit(int ageLimit) {
         this.ageLimit = ageLimit;
     }
+
+    public String getImage() { return image; }
+
+    public void setImage(String image) { this.image = image; }
+
+    public String getCoverImage() { return coverImage; }
+
+    public void setCoverImage(String coverImage) { this.coverImage = coverImage; }
 
     public float getRating() {
         return rating;

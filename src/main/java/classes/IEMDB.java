@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import Tools.PairComparator.PairFIComparator;
 import Tools.PairComparator.PairSIComparator;
@@ -44,29 +45,33 @@ public class IEMDB {
     }
 
     public void loadMovies() throws IOException, ParseException {
-        URL url = new URL("http://138.197.181.131:5000/api/movies");
+        URL url = new URL("http://138.197.181.131:5000/api/v2/movies");
         ObjectMapper objectMapper = new ObjectMapper();
         movies = objectMapper.readValue(url, new TypeReference<ArrayList<Movie>>() {
         });
         for (Movie movie : movies) {
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
             movie.setDate(formatter.parse(movie.getReleaseDate()));
             for (Integer actorId : movie.getCast()) {
                 Actor actor = getActorById(actorId);
                 actor.addActedMovies(movie.getId());
             }
         }
-        sortByImdb();
+        setMovies(sortByImdb(movies));
     }
 
     public void loadActors() throws IOException, ParseException {
-        URL url = new URL("http://138.197.181.131:5000/api/actors");
+        URL url = new URL("http://138.197.181.131:5000/api/v2/actors");
         ObjectMapper objectMapper = new ObjectMapper();
         actors = objectMapper.readValue(url, new TypeReference<ArrayList<Actor>>() {
         });
-        for (Actor actor: actors) {
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            actor.setDate(formatter.parse(actor.getBirthDate()));
+      for (Actor actor: actors) {
+            SimpleDateFormat formatter = new SimpleDateFormat("MMMM d, yyyy");
+            try {
+              actor.setDate(formatter.parse(actor.getBirthDate()));
+            } catch (ParseException e) {
+              actor.setDate(null);
+            }
         }
     }
 
@@ -140,7 +145,40 @@ public class IEMDB {
         return null;
     }
 
-    public void sortByImdb() {
+    public ArrayList<Movie> searchMoviesByName(String searchValue, ArrayList<Movie> movies) {
+      ArrayList<Movie> selectedMovies = new ArrayList<>();
+      for (Movie movie : movies) {
+        String movieName = movie.getName().toLowerCase();
+        if (movieName.contains(searchValue.toLowerCase()))
+          selectedMovies.add(movie);
+      }
+      return selectedMovies;
+    }
+
+    public ArrayList<Movie> searchMoviesByGenre(String searchValue, ArrayList<Movie> movies) {
+      ArrayList<Movie> selectedMovies = new ArrayList<>();
+      for (Movie movie : movies) {
+        for (String genre : movie.getGenres()) {
+          if (genre.toLowerCase().contains(searchValue.toLowerCase())) {
+            selectedMovies.add(movie);
+            break;
+          }
+        }
+      }
+      return selectedMovies;
+    }
+
+    public ArrayList<Movie> searchMoviesByReleaseDate(String searchValue, ArrayList<Movie> movies) {
+      ArrayList<Movie> selectedMovies = new ArrayList<>();
+      for (Movie movie : movies) {
+        String releaseDate = movie.getReleaseDate();
+        if (releaseDate.contains(searchValue))
+          selectedMovies.add(movie);
+      }
+      return selectedMovies;
+    }
+
+    public ArrayList<Movie> sortByImdb(ArrayList<Movie> movies) {
         ArrayList<Pair<Float, Integer>> movieList = new ArrayList<>();
         for (Movie movie : movies)
             movieList.add(new Pair(movie.getImdbRate(), movie.getId()));
@@ -148,10 +186,10 @@ public class IEMDB {
         ArrayList<Movie> sortedMovies = new ArrayList<>();
         for (Pair<Float, Integer> pair : movieList)
             sortedMovies.add(getMovieById(pair.getValue()));
-        setMovies(sortedMovies);
+        return sortedMovies;
     }
 
-    public void sortByDate() {
+    public ArrayList<Movie> sortByDate(ArrayList<Movie> movies) {
         ArrayList<Pair<String, Integer>> movieList = new ArrayList<>();
         for (Movie movie : movies)
             movieList.add(new Pair(movie.getReleaseDate(), movie.getId()));
@@ -159,7 +197,7 @@ public class IEMDB {
         ArrayList<Movie> sortedMovies = new ArrayList<>();
         for (Pair<String, Integer> pair : movieList)
             sortedMovies.add(getMovieById(pair.getValue()));
-        setMovies(sortedMovies);
+        return sortedMovies;
     }
 
     public void rateMovie(String userEmail, int movieId, int rate) {

@@ -9,13 +9,15 @@ public class Actor {
     private String birthDate;
     private Date date;
     private String nationality;
+    private String image;
     private ArrayList<Integer> actedMovies = new ArrayList<>();
 
-    public Actor(int id, String name, String birthDate, String nationality) {
+    public Actor(int id, String name, String birthDate, String nationality, String image) {
         this.id = id;
         this.name = name;
         this.birthDate = birthDate;
         this.nationality = nationality;
+        this.image = image;
     }
 
     public Actor() {
@@ -54,14 +56,22 @@ public class Actor {
         this.nationality = nationality;
     }
 
-    public int calculateAge() {
-        Date now = new Date();
-        return now.getYear() - this.date.getYear();
+    public Integer calculateAge() {
+      if (this.date == null)
+        return null;
+      Date now = new Date();
+      return now.getYear() - this.date.getYear();
     }
 
     public void setDate(Date date) {
         this.date = date;
     }
+
+    public String getImage() { return image; }
+
+    public void setImage(String name) {
+    this.image = image;
+  }
 
     public void addActedMovies(int movieId) {
         this.actedMovies.add(movieId);
