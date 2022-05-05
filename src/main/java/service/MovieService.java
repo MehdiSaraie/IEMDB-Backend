@@ -1,5 +1,6 @@
 package service;
 
+import classes.Comment;
 import classes.IEMDB;
 import classes.Movie;
 import classes.User;
@@ -19,9 +20,18 @@ public class MovieService {
     @RequestParam(value = "name", required = false) String name,
     @RequestParam(value = "genre", required = false) String genre,
     @RequestParam(value = "releaseDate", required = false) String releaseDate,
-    @RequestParam(value = "sortBy", required = false) String sortBy) {
+    @RequestParam(value = "sortBy", required = false) String sortBy,
+    @RequestParam(value = "actor_id", required = false) Integer actorId) {
     IEMDB iemdb = IEMDB.getInstance();
     ArrayList<Movie> selectedMovies = iemdb.getMovies();
+    if (actorId != null) {
+      ArrayList<Movie> actedMovies = new ArrayList<>();
+      for (Movie movie : selectedMovies) {
+        if (movie.getCast().contains(actorId))
+          actedMovies.add(movie);
+      }
+      return actedMovies;
+    }
     if (name != null && !name.isEmpty())
       selectedMovies = iemdb.searchMoviesByName(name, selectedMovies);
     if (genre != null && !genre.isEmpty())
@@ -43,7 +53,7 @@ public class MovieService {
     return IEMDB.getInstance().getMovieById(movieId);
   }
 
-  @RequestMapping(value = "/movies/{movie_id}/addRate", method = RequestMethod.PUT,
+  @RequestMapping(value = "/movies/{movie_id}/addRate", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> rateMovie(
     @PathVariable(value = "movie_id") int movieId,
@@ -59,9 +69,9 @@ public class MovieService {
     }
   }
 
-  @RequestMapping(value = "/movies/{movie_id}/addComment", method = RequestMethod.PUT,
+  @RequestMapping(value = "/movies/{movie_id}/addComment", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> addCommentToMovie(
+  public ResponseEntity<List<Comment>> addCommentToMovie(
     @PathVariable(value = "movie_id") int movieId,
     @RequestBody() String commentText) {
     IEMDB iemdb = IEMDB.getInstance();
@@ -71,7 +81,7 @@ public class MovieService {
     }
     else {
       iemdb.addComment(currentUser.getEmail(), movieId, commentText);
-      return new ResponseEntity<>(HttpStatus.OK);
+      return new ResponseEntity<>(iemdb.getMovieById(movieId).getComments(), HttpStatus.OK);
     }
   }
 }

@@ -72,6 +72,7 @@ public class IEMDB {
             } catch (ParseException e) {
               actor.setDate(null);
             }
+            actor.setAge(actor.calculateAge());
         }
     }
 
@@ -138,7 +139,7 @@ public class IEMDB {
         return null;
     }
 
-    private Comment getCommentById(int commentId) {
+    public Comment getCommentById(int commentId) {
         for (Comment comment : comments)
             if (comment.getId() == commentId)
                 return comment;

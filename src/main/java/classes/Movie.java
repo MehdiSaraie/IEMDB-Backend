@@ -168,13 +168,13 @@ public class Movie {
 
     public void setCoverImage(String coverImage) { this.coverImage = coverImage; }
 
-    public float getRating() {
-        return rating;
-    }
+    public float getRating() { return rating; }
 
     public void setRating(float rating) {
         this.rating = rating;
     }
+
+    public int getRatingCount() { return ratingCount; }
 
     public ArrayList<Comment> getComments() {
         return comments;

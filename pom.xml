@@ -94,6 +94,11 @@
         <artifactId>spring-test</artifactId>
         <version>${springframework.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.thetransactioncompany</groupId>
+        <artifactId>cors-filter</artifactId>
+        <version>2.10</version>
+      </dependency>
     </dependencies>
 
     <build>
