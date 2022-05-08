@@ -1,4 +1,4 @@
-package classes;
+package domain;
 
 public class CustomException extends Exception {
     private String message;

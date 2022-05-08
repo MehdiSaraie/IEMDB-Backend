@@ -1,9 +1,8 @@
 package service;
 
-import classes.Comment;
-import classes.IEMDB;
-import classes.Movie;
-import classes.User;
+import domain.Comment;
+import domain.IEMDB;
+import domain.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

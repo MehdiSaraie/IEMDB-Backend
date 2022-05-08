@@ -1,7 +1,7 @@
 package service;
 
-import classes.IEMDB;
-import classes.User;
+import domain.IEMDB;
+import domain.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
