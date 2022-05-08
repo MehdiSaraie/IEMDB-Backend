@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UserService {
-  @RequestMapping(value = "users/logout", method = RequestMethod.POST,
+  @RequestMapping(value = "users/logout", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public void Logout() {
     IEMDB.getInstance().setLoggedInUser(null);

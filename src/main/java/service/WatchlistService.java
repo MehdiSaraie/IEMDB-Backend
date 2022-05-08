@@ -29,7 +29,7 @@ public class WatchlistService {
     }
   }
 
-  @RequestMapping(value = "/watchlist", method = RequestMethod.PUT,
+  @RequestMapping(value = "/watchlist", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> addMovieToWatchlist(@RequestParam(value = "movie_id") int movieId) {
     try {
