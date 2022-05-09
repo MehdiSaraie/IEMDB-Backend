@@ -11,7 +11,6 @@ public class Actor {
     private String nationality;
     private String image;
     private Integer age;
-    private ArrayList<Integer> actedMovies = new ArrayList<>();
 
     public Actor(int id, String name, String birthDate, String nationality, String image) {
         this.id = id;
@@ -75,12 +74,4 @@ public class Actor {
     public Integer getAge() { return age; }
 
     public void setAge(Integer age) { this.age = age; }
-
-    public void addActedMovies(int movieId) {
-        this.actedMovies.add(movieId);
-    }
-
-    public ArrayList<Integer> getActedMovies() {
-        return this.actedMovies;
-    }
 }

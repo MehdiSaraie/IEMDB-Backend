@@ -4,6 +4,11 @@ public class Cast {
     private int actorId;
     private int movieId;
 
+    public Cast(int actorId, int movieId) {
+        this.actorId = actorId;
+        this.movieId = movieId;
+    }
+
     public int getActorId() {
         return actorId;
     }

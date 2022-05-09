@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class User {
+    private int id;
     private String email;
     private String password;
     private String nickname;
     private String name;
     private Date birthDate;
-    private ArrayList<Integer> watchList = new ArrayList<>();
 
-    public User(String email, String password, String nickname, String name, Date birthDate) {
+    public User(int id, String email, String password, String nickname, String name, Date birthDate) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -21,6 +22,14 @@ public class User {
 
     public User() {
 
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getEmail() {
@@ -61,23 +70,5 @@ public class User {
 
     public void setBirthDate(Date birthDate) {
         this.birthDate = birthDate;
-    }
-
-    public ArrayList<Integer> getWatchList() {
-        return this.watchList;
-    }
-
-
-    public int calculateAge() {
-        Date now = new Date();
-        return now.getYear() - this.birthDate.getYear();
-    }
-
-    public void addToWatchList(int movieId) {
-        this.watchList.add(movieId);
-    }
-
-    public void removeFromWatchList(int movieId) {
-        this.watchList.remove(new Integer(movieId));
     }
 }
