@@ -30,29 +30,36 @@ public class ActorRepository extends Repository<Actor> {
     @Override
     public String getCreateTableQuery() {
         return "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "(" +
-                "" +
-                "" +
-                "" +
+                "id SMALLINT," +
+                "name VARCHAR," +
+                "birthDate VARCHAR," +
+                "nationality VARCHAR," +
+                "image BLOB," +
+                "PRIMARY KEY (id)" +
                 ")";
     }
 
     @Override
     public String getInsertQueryValues(Actor actor) {
-        return "'" + actor.getName() + "'," +
+        return
+            "'" + actor.getName() + "'," +
             "'" + actor.getBirthDate() + "'," +
-            "'" + + "'," +
-            "'" + + "'," +
-            "'" + + "'," +
+            "'" + actor.getNationality() + "'," +
+            "'" + actor.getImage() + "'";
     }
 
     @Override
     public String getColumns() {
-        return "";
+        return "id, name, birthdate, nationality, image";
     }
 
     @Override
     public Actor fillObjectFromResult(Actor actor, ResultSet result) throws SQLException {
         actor.setId(result.getInt("id"));
+        actor.setName(result.getString("name"));
+        actor.setBirthDate(result.getString("birthDate"));
+        actor.setNationality(result.getString("nationality"));
+        actor.setImage(result.getString("image"));
         return actor;
     }
 }

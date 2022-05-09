@@ -29,17 +29,24 @@ public class CastRepository extends Repository<Cast>{
 
     @Override
     public String getCreateTableQuery() {
-        return null;
+        return "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "(" +
+                "movie_id SMALLINT," +
+                "actor_id SMALLINT," +
+                "PRIMARY KEY (movie_id, actor_id)," +
+                "FOREIGN KEY movie_id REFERENCES(movies.id)," +
+                "FOREIGN KEY actor_id REFERENCES(actors.id)," +
+                ")";
     }
 
     @Override
     public String getTableName() {
-        return null;
+        return TABLE_NAME;
     }
 
     @Override
-    public String getInsertQueryValues(Object object) {
-        return null;
+    public String getInsertQueryValues(Cast cast) {
+        return "" + Integer.toString(cast.getActorId()) + "," +
+                "" + Integer.toString(cast.getMovieId());
     }
 
     @Override
@@ -48,8 +55,10 @@ public class CastRepository extends Repository<Cast>{
     }
 
     @Override
-    public Object fillObjectFromResult(Object object, ResultSet result) throws SQLException {
-        return null;
+    public Cast fillObjectFromResult(Cast cast, ResultSet result) throws SQLException {
+        cast.setActorId(result.getInt("actor_id"));
+        cast.setMovieId(result.getInt("movie_id"));
+        return cast;
     }
 
     public ArrayList<Integer> getMovieActorIds(int movieId) {

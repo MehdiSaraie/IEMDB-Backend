@@ -32,24 +32,36 @@ public class MovieRepository extends Repository<Movie> {
     @Override
     public String getCreateTableQuery() {
         return "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "(" +
-                "" +
-                "" +
-                "" +
-                ")";
+            "id SMALLINT," +
+            "name VARCHAR," +
+            "summary LONGVARCHAR," +
+            "releaseDate VARCHAR," +
+            "director VARCHAR," +
+            "writers VARCHAR," +
+            "genres VARCHAR," +
+            "imdbRate DECIMAL," +
+            "duration SMALLINT," +
+            "ageLimit SMALLINT," +
+            "image BLOB," +
+            "coverImage BLOB," +
+            "PRIMARY KEY (id)," +
+        ")";
     }
 
     @Override
     public String getInsertQueryValues(Movie movie) {
-        return "'" + "" + "'," +
-                "'" + "" + "'," +
-                "'" + ""+ "'," +
-                "'" + ""+ "'," +
-                "'" + "";
+        return " '" + movie.getName() + "'," +
+                "'" + movie.getSummary() + "'," +
+                "'" + movie.getReleaseDate() + "'," +
+                "'" + movie.getDirector() + "'," +
+                "'" + Float.toString(movie.getImdbRate()) + "'," +
+                "'" + Integer.toString(movie.getDuration()) + "'," +
+                "'" + Integer.toString(movie.getAgeLimit()) + "' ";
     }
 
     @Override
     public String getColumns() {
-        return "";
+        return "id, name, summary, releaseDate, date, director, cast, imdbRate, duration, ageLimit, image, coverImage";
     }
 
     @Override

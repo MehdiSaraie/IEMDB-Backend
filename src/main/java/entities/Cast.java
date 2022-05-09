@@ -2,7 +2,7 @@ package entities;
 
 public class Cast {
     private int actorId;
-    private int moviesId;
+    private int movieId;
 
     public int getActorId() {
         return actorId;
@@ -12,11 +12,11 @@ public class Cast {
         this.actorId = actorId;
     }
 
-    public int getMoviesId() {
-        return moviesId;
+    public int getMovieId() {
+        return movieId;
     }
 
-    public void setMoviesId(int moviesId) {
-        this.moviesId = moviesId;
+    public void setMovieId(int movieId) {
+        this.movieId = movieId;
     }
 }

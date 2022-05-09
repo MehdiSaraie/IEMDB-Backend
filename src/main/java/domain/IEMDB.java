@@ -36,6 +36,7 @@ public class IEMDB {
     }
 
     // --------------------------- authentication ---------------------------
+
     public void login(String email, String password) throws Exception {
         User user = UserRepository.getInstance().getByEmail(email);
         if (user == null) {
@@ -151,9 +152,4 @@ public class IEMDB {
         WatchlistRepository.getInstance().removeFromWatchlist(user.getId(), movieId);
 
     }
-
-
-
-
-
 }
