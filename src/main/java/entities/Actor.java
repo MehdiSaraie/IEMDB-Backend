@@ -1,4 +1,4 @@
-package classes;
+package entities;
 
 import java.util.ArrayList;
 import java.util.Date;
