@@ -2,11 +2,11 @@ package repository;
 
 
 import entities.User;
+import org.springframework.ejb.access.SimpleRemoteSlsbInvokerInterceptor;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class UserRepository extends Repository<User> {
     private static final String TABLE_NAME = "users";
@@ -26,32 +26,47 @@ public class UserRepository extends Repository<User> {
         return instance;
     }
 
+    @Override
     public String getTableName() {
         return TABLE_NAME;
     }
 
+    @Override
     public String getCreateTableQuery() {
-        return "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "(" +
-                "" +
-                "" +
-                "" +
-                ")";
+        return "CREATE TABLE IF NOT EXISTS users (" +
+            "id INT NOT NULL AUTO_INCREMENT," +
+            "email TEXT," +
+            "password TEXT," +
+            "nickname TEXT," +
+            "name TEXT," +
+            "birthDate DATE," +
+            "PRIMARY KEY (id))";
     }
 
-    public String getInsertQueryValues(User user) {
-        return "'" + "" + "'," +
-                "'" + "" + "'," +
-                "'" + "" + "'," +
-                "'" + "" + "'," +
-                "'" + "";
+    @Override
+    public ArrayList<String> getColumns() {
+        return new ArrayList<>(Arrays.asList("email", "password", "nickname", "name", "birthDate"));
     }
 
-    public String getColumns() {
-        return "";
+    @Override
+    public PreparedStatement fillInsertQuery(PreparedStatement statement, User user) throws SQLException {
+        statement.setString(1, user.getEmail());
+        statement.setString(2, user.getPassword());
+        statement.setString(3, user.getNickname());
+        statement.setString(4, user.getName());
+        statement.setString(5, user.getBirthDate());
+        return statement;
     }
 
-    public User fillObjectFromResult(User user, ResultSet result) throws SQLException {
+    @Override
+    public User fillObjectFromResult(ResultSet result) throws SQLException {
+        User user = new User();
         user.setId(result.getInt("id"));
+        user.setEmail(result.getString("email"));
+        user.setPassword(result.getString("password"));
+        user.setNickname(result.getString("nickname"));
+        user.setName(result.getString("name"));
+        user.setBirthDate(result.getString("birthDate"));
         return user;
     }
 
@@ -60,15 +75,11 @@ public class UserRepository extends Repository<User> {
         try {
             Connection connection = dataSource.getConnection();
 
-            PreparedStatement statement = connection.prepareStatement(
-                    "SELECT ? FROM ? WHERE email = ?"
-            );
-            statement.setString(1, this.getColumns());
-            statement.setString(2, this.getTableName());
-            statement.setString(3, email);
+            String sql = String.format("SELECT (id,%s) FROM %s WHERE email = ?", String.join(",", this.getColumns()), email);
+            PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet result = statement.executeQuery();
 
-            user = this.fillObjectFromResult(user, result);
+            user = this.fillObjectFromResult(result);
 
             result.close();
             statement.close();

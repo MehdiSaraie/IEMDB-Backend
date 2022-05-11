@@ -2,11 +2,9 @@ package repository;
 
 import entities.Cast;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CastRepository extends Repository<Cast>{
 
@@ -14,6 +12,7 @@ public class CastRepository extends Repository<Cast>{
     private static CastRepository instance;
 
     protected CastRepository() throws SQLException {
+        super();
     }
 
     public static CastRepository getInstance() {
@@ -29,7 +28,7 @@ public class CastRepository extends Repository<Cast>{
 
     @Override
     public String getCreateTableQuery() {
-        return "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "(" +
+        return "CREATE TABLE IF NOT EXISTS cast (" +
                 "movie_id SMALLINT," +
                 "actor_id SMALLINT," +
                 "PRIMARY KEY (movie_id, actor_id)," +
@@ -44,21 +43,23 @@ public class CastRepository extends Repository<Cast>{
     }
 
     @Override
-    public String getInsertQueryValues(Cast cast) {
-        return "" + Integer.toString(cast.getActorId()) + "," +
-                "" + Integer.toString(cast.getMovieId());
+    public ArrayList<String> getColumns() {
+        return new ArrayList<>(Arrays.asList("movie_id", "actor_id"));
     }
 
     @Override
-    public String getColumns() {
-        return null;
-    }
-
-    @Override
-    public Cast fillObjectFromResult(Cast cast, ResultSet result) throws SQLException {
+    public Cast fillObjectFromResult(ResultSet result) throws SQLException {
+        Cast cast = new Cast();
         cast.setActorId(result.getInt("actor_id"));
         cast.setMovieId(result.getInt("movie_id"));
         return cast;
+    }
+
+    @Override
+    public PreparedStatement fillInsertQuery(PreparedStatement statement, Cast cast) throws SQLException {
+        statement.setInt(1, cast.getMovieId());
+        statement.setInt(2, cast.getActorId());
+        return statement;
     }
 
     public ArrayList<Integer> getMovieActorIds(int movieId) {
@@ -67,7 +68,7 @@ public class CastRepository extends Repository<Cast>{
             Connection connection = dataSource.getConnection();
 
             PreparedStatement statement = connection.prepareStatement(
-                    "SELECT actor_id FROM plays_in where movie_id = ?"
+                    "SELECT actor_id FROM cast where movie_id = ?"
             );
             statement.setInt(1, movieId);
             ResultSet result = statement.executeQuery();
@@ -90,7 +91,7 @@ public class CastRepository extends Repository<Cast>{
             Connection connection = dataSource.getConnection();
 
             PreparedStatement statement = connection.prepareStatement(
-                    "SELECT movie_id FROM plays_in where actor_id = ?"
+                    "SELECT movie_id FROM cast where actor_id = ?"
             );
             statement.setInt(1, actorId);
             ResultSet result = statement.executeQuery();
