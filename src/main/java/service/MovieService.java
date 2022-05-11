@@ -67,6 +67,9 @@ public class MovieService {
   ) {
     try {
       IEMDB iemdb = IEMDB.getInstance();
+      if (!iemdb.isLoggedIn()) {
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+      }
       iemdb.addComment(movieId, commentText);
       return new ResponseEntity<>(iemdb.getMovieComments(movieId), HttpStatus.OK);
     } catch (CustomException e) {

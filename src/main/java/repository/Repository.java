@@ -1,15 +1,13 @@
 package repository;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 
 public abstract class Repository<T> {
@@ -38,36 +36,38 @@ public abstract class Repository<T> {
 
     private void createTable() throws SQLException {
         Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(this.getCreateTableQuery());
-        statement.executeUpdate();
+        Statement statement = connection.createStatement();
+        statement.execute(this.getCreateTableQuery());
         statement.close();
         connection.close();
     }
 
-    public void loadFromURL(URL url) throws SQLException, IOException {
+    public void loadFromURL(URL url, Class<T> tClass) throws SQLException, IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        ArrayList<T> objects = objectMapper.readValue(url, new TypeReference<ArrayList<T>>() {});
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        CollectionType listType = objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, tClass);
+        ArrayList<T> objects = objectMapper.readValue(url, listType);
         this.addBulk(objects);
     }
 
-    public T getById(int objectId) {
+    public T getById(int objectId){
         T object = null;
         try {
             Connection connection = dataSource.getConnection();
-            PreparedStatement statement = connection.prepareStatement("SELECT ? FROM ? WHERE id=?");
-            statement.setString(1, getColumns());
-            statement.setString(2, this.getTableName());
-            statement.setInt(3, objectId);
+            String sql = String.format("SELECT %s FROM %s WHERE id=?", String.join(",", this.getColumns()), this.getTableName());
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setInt(1, objectId);
             ResultSet result = statement.executeQuery();
             result.next();
 
-            object = this.fillObjectFromResult(object, result);
-
+            object = this.fillObjectFromResult(result);
             result.close();
             statement.close();
             connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
         }
         return object;
     }
@@ -76,12 +76,8 @@ public abstract class Repository<T> {
         try {
             Connection connection = dataSource.getConnection();
 
-            PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO ? (?) VALUES (?)"
-            );
-            statement.setString(1, this.getTableName());
-            statement.setString(2, this.getColumns());
-            statement.setString(3, this.getInsertQueryValues(object));
+            PreparedStatement statement = connection.prepareStatement(this.generateInsertQueryTemplate());
+            statement = this.fillInsertQuery(statement, object);
             statement.executeQuery();
 
             statement.close();
@@ -95,18 +91,15 @@ public abstract class Repository<T> {
         try {
             Connection connection = dataSource.getConnection();
             connection.setAutoCommit(false);
-            PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO ? (?) VALUES (?)"
-            );
-            statement.setString(1, this.getTableName());
-            statement.setString(2, this.getColumns());
 
+            PreparedStatement statement = connection.prepareStatement(this.generateInsertQueryTemplate());
             for (T object : objects) {
-                statement.setString(3, this.getInsertQueryValues(object));
-                statement.executeQuery();
+                statement = connection.prepareStatement(this.generateInsertQueryTemplate());
+                statement = this.fillInsertQuery(statement, object);
+                System.out.println(statement.toString());
+                statement.execute();
             }
             connection.commit();
-
             statement.close();
             connection.close();
         } catch (SQLException e) {
@@ -114,10 +107,19 @@ public abstract class Repository<T> {
         }
     }
 
+    public String generateInsertQueryTemplate() {
+        ArrayList<String> questionMarks = new ArrayList<>();
+        for (int i = 0; i < this.getColumns().size(); i++) {
+            questionMarks.add("?");
+        }
+        String joinedQuestionMarks = String.join(",", questionMarks);
+        return String.format("INSERT INTO %s (%s) VALUES (%s)", this.getTableName(), String.join(",", this.getColumns()), joinedQuestionMarks);
+    }
+
     public abstract String getCreateTableQuery();
     public abstract String getTableName();
-    public abstract String getInsertQueryValues(T object);
-    public abstract String getColumns();
-    public abstract T fillObjectFromResult(T object, ResultSet result) throws SQLException;
+    public abstract PreparedStatement fillInsertQuery(PreparedStatement p, T t) throws SQLException;
+    public abstract ArrayList<String> getColumns();
+    public abstract T fillObjectFromResult(ResultSet result) throws SQLException;
 
 }

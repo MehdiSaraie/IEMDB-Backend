@@ -3,7 +3,6 @@ package domain;
 import java.io.IOException;
 
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 
 import entities.*;
@@ -22,13 +21,14 @@ public class IEMDB {
         }
     }
 
-    public IEMDB() throws IOException, ParseException, SQLException {
-        String baseURL = "http://138.197.181.131:5000/api/v2/";
-        MovieRepository.getInstance().loadFromURL(new URL(baseURL + "movies"));
-        CastRepository.getInstance().loadFromURL(new URL(baseURL + "movies"));
-        ActorRepository.getInstance().loadFromURL(new URL(baseURL + "actors"));
-        UserRepository.getInstance().loadFromURL(new URL(baseURL + "users"));
-        CommentRepository.getInstance().loadFromURL(new URL(baseURL + "comments"));
+    public IEMDB() throws IOException, SQLException {
+        String version2 = "v2/";
+        String baseURL = "http://138.197.181.131:5000/api/";
+        MovieRepository.getInstance().loadFromURL(new URL(baseURL + version2 + "movies"), (Class<Movie>) Movie.class);
+//        CastRepository.getInstance().loadFromURL(new URL(baseURL + "movies"));
+        ActorRepository.getInstance().loadFromURL(new URL(baseURL + version2 + "actors"), (Class<Actor>) Actor.class);
+        UserRepository.getInstance().loadFromURL(new URL(baseURL + "users"), (Class<User>) User.class);
+        CommentRepository.getInstance().loadFromURL(new URL(baseURL + "comments"), (Class<Comment>) Comment.class);
     }
 
     public static IEMDB getInstance() {
@@ -135,7 +135,7 @@ public class IEMDB {
 
     public ArrayList<Movie> getWatchlist() {
         User user = this.getLoggedInUser();
-        ArrayList<Movie> watchlist = WatchlistRepository.getInstance().getUserWatchlist(user.getid());
+        ArrayList<Movie> watchlist = WatchlistRepository.getInstance().getUserWatchlist(user.getId());
         return watchlist;
     }
 
