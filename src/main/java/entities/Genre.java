@@ -9,6 +9,8 @@ public class Genre {
         this.genre = genre;
     }
 
+    public Genre() {}
+
     public int getMovie_id() {
         return movie_id;
     }

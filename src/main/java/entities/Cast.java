@@ -9,6 +9,10 @@ public class Cast {
         this.movieId = movieId;
     }
 
+    public Cast() {
+
+    }
+
     public int getActorId() {
         return actorId;
     }

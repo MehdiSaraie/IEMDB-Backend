@@ -5,12 +5,13 @@ import java.util.Date;
 public class Comment {
     private int id;
     private int userId;
+    private String userEmail;
     private int movieId;
     private String text;
     private Date date = new Date();
 
-    public Comment(int userId, int movieId, String text) {
-        this.userId = userId;
+    public Comment(String userEmail, int movieId, String text) {
+        this.userEmail = userEmail;
         this.movieId = movieId;
         this.text = text;
     }
@@ -33,6 +34,14 @@ public class Comment {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
     public int getMovieId() {

@@ -1,6 +1,7 @@
 package entities;
 
 public class Rate {
+    private int id;
     private int userId;
     private int movieId;
     private int rateValue;
@@ -9,6 +10,16 @@ public class Rate {
         this.userId = userId;
         this.movieId = movieId;
         this.rateValue = rateValue;
+    }
+
+    public Rate() {}
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getUserId() {

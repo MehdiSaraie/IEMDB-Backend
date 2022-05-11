@@ -1,6 +1,7 @@
 package entities;
 
 public class Vote {
+    private int id;
     private int commentId;
     private int userId;
     private int vote;
@@ -9,6 +10,16 @@ public class Vote {
         this.commentId = commentId;
         this.userId = userId;
         this.vote = vote;
+    }
+
+    public Vote() {}
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getCommentId() {

@@ -4,6 +4,8 @@ public class Writer {
     private int movie_id;
     private String writer_name;
 
+    public Writer() {}
+
     public int getMovie_id() {
         return movie_id;
     }
