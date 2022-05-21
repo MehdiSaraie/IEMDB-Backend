@@ -1,8 +1,7 @@
-package service;
+package controllers;
 
 import classes.Comment;
 import classes.IEMDB;
-import classes.Movie;
 import classes.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class CommentService {
+public class CommentController {
 //  @RequestMapping(value = "/comments/{comment_id}", method = RequestMethod.GET,
 //          produces = MediaType.APPLICATION_JSON_VALUE)
 //  public Comment getComment(@PathVariable(value = "comment_id") int commentId) {

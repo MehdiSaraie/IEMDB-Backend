@@ -1,4 +1,4 @@
-package service;
+package controllers;
 
 import classes.Comment;
 import classes.IEMDB;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class MovieService {
+public class MovieController {
   @RequestMapping(value = "/movies", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<Movie> getMovies(

@@ -1,4 +1,4 @@
-package service;
+package controllers;
 
 import classes.*;
 import org.springframework.http.HttpStatus;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class WatchlistService {
+public class WatchlistController {
   @RequestMapping(value = "/watchlist", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<Movie>> getWatchlistMovies() {

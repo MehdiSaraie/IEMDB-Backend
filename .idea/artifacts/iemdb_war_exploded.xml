@@ -35,6 +35,7 @@
           <element id="library" level="project" name="Maven: org.springframework:spring-test:4.3.0.RELEASE" />
           <element id="library" level="project" name="Maven: com.thetransactioncompany:cors-filter:2.10" />
           <element id="library" level="project" name="Maven: com.thetransactioncompany:java-property-utils:1.16" />
+          <element id="library" level="project" name="Maven: org.springframework.security:spring-security-crypto:5.1.4.RELEASE" />
         </element>
       </element>
       <element id="directory" name="META-INF">
