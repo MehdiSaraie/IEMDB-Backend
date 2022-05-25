@@ -9,7 +9,7 @@ import java.util.Arrays;
 import entities.Actor;
 
 public class ActorRepository extends Repository<Actor> {
-    private static final String TABLE_NAME = "actors";
+    private String TABLE_NAME = "actors";
     private static ActorRepository instance;
 
     protected ActorRepository() throws SQLException {
@@ -26,9 +26,8 @@ public class ActorRepository extends Repository<Actor> {
         return instance;
     }
 
-    @Override
     public String getTableName() {
-        return TABLE_NAME;
+        return this.TABLE_NAME;
     }
 
     @Override

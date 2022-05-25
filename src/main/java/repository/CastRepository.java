@@ -1,14 +1,20 @@
 package repository;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import entities.Cast;
+import entities.Movie;
 
+import java.io.IOException;
+import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CastRepository extends Repository<Cast>{
 
-    private static final String TABLE_NAME = "cast";
+    private String TABLE_NAME = "cast";
     private static CastRepository instance;
 
     protected CastRepository() throws SQLException {
@@ -29,17 +35,25 @@ public class CastRepository extends Repository<Cast>{
     @Override
     public String getCreateTableQuery() {
         return "CREATE TABLE IF NOT EXISTS cast (" +
-                "movie_id SMALLINT," +
-                "actor_id SMALLINT," +
-                "PRIMARY KEY (movie_id, actor_id)," +
-                "FOREIGN KEY movie_id REFERENCES(movies.id)," +
-                "FOREIGN KEY actor_id REFERENCES(actors.id)," +
+                "movie_id INT," +
+                "actor_id INT" +
+//                "PRIMARY KEY (movie_id, actor_id)," +
+//                "FOREIGN KEY (movie_id) REFERENCES movies(id)," +
+//                "FOREIGN KEY (actor_id) REFERENCES actors(id)" +
                 ")";
     }
 
-    @Override
     public String getTableName() {
-        return TABLE_NAME;
+        return this.TABLE_NAME;
+    }
+
+    public void load(ArrayList<Movie> movies) throws SQLException, IOException {
+        for (Movie movie : movies) {
+            for (int actor_id : movie.getCast()) {
+                Cast cast = new Cast(actor_id, movie.getId());
+                this.add(cast);
+            }
+        }
     }
 
     @Override

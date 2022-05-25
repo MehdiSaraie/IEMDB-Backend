@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 public class WatchlistRepository extends Repository<Watchlist>{
     private static WatchlistRepository instance;
-    private static final String TABLE_NAME = "watchlist";
+    private String TABLE_NAME = "watchlist";
 
     protected WatchlistRepository() throws SQLException {
     }
@@ -25,20 +25,20 @@ public class WatchlistRepository extends Repository<Watchlist>{
         return instance;
     }
 
-    @Override
-    public String getTableName() {
-        return TABLE_NAME;
-    }
 
     @Override
     public String getCreateTableQuery() {
         return "CREATE TABLE IF NOT EXISTS watchlist (" +
-                "id INT NOT NULL AUTO_INCREMENT," +
                 "movie_id INT," +
                 "user_id INT" +
-                "PRIMARY_KEY(user_id, movie_id)," +
-                "FOREIGN_KEY user_id REFERENCES user(id)" +
-                "FOREIGN_KEY movie_id REFERENCES movie(id))";
+//                "PRIMARY KEY(user_id, movie_id)," +
+//                "FOREIGN KEY (user_id) REFERENCES users(id)" +
+//                "FOREIGN KEY (movie_id) REFERENCES movies(id)" +
+                ")";
+    }
+
+    public String getTableName() {
+        return this.TABLE_NAME;
     }
 
     @Override
@@ -67,7 +67,8 @@ public class WatchlistRepository extends Repository<Watchlist>{
             Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
 
-            ResultSet result = statement.executeQuery(String.format("SELECT movie_id FROM watchlist WHERE user_id=%d", userId));
+            String query = String.format("SELECT movie_id FROM watchlist WHERE user_id=%d", userId);
+            ResultSet result = statement.executeQuery(query);
             while (result.next()) {
                 int movieId = result.getInt(1);
                 Movie movie = MovieRepository.getInstance().getById(movieId);
@@ -83,11 +84,18 @@ public class WatchlistRepository extends Repository<Watchlist>{
         return watchlist;
     }
 
-    //TODO
     public void removeFromWatchlist(int userId, int movieId) {
-    }
+        try {
+            Connection connection = dataSource.getConnection();
+            Statement statement = connection.createStatement();
 
-    //TODO
-    public void addToWatchlist(int userId, int movieId) {
+            String query = String.format("DELETE FROM watchlist WHERE user_id=%d AND movie_id=%d", userId, movieId);
+            statement.execute(query);
+
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

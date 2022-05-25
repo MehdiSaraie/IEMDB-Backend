@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 public abstract class Repository<T> {
     ComboPooledDataSource dataSource;
+    private String TABLE_NAME;
 
     protected Repository() throws SQLException {
         try {
@@ -42,26 +43,30 @@ public abstract class Repository<T> {
         connection.close();
     }
 
-    public void loadFromURL(URL url, Class<T> tClass) throws SQLException, IOException {
+    public ArrayList<T> loadFromURL(URL url, Class<T> tClass) throws SQLException, IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         CollectionType listType = objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, tClass);
         ArrayList<T> objects = objectMapper.readValue(url, listType);
         this.addBulk(objects);
+        return objects;
     }
 
     public T getById(int objectId){
         T object = null;
         try {
             Connection connection = dataSource.getConnection();
-            String sql = String.format("SELECT %s FROM %s WHERE id=?", String.join(",", this.getColumns()), this.getTableName());
+            String sql = String.format("SELECT id,%s FROM %s WHERE id=?", String.join(",", this.getColumns()), this.getTableName());
             PreparedStatement statement = connection.prepareStatement(sql);
 
             statement.setInt(1, objectId);
             ResultSet result = statement.executeQuery();
+            System.out.println(statement);
+            System.out.println(result);
             result.next();
-
+            System.out.println(result);
             object = this.fillObjectFromResult(result);
+            System.out.println(object);
             result.close();
             statement.close();
             connection.close();
@@ -78,7 +83,8 @@ public abstract class Repository<T> {
 
             PreparedStatement statement = connection.prepareStatement(this.generateInsertQueryTemplate());
             statement = this.fillInsertQuery(statement, object);
-            statement.executeQuery();
+            System.out.println(statement.toString());
+            statement.execute();
 
             statement.close();
             connection.close();
@@ -117,6 +123,7 @@ public abstract class Repository<T> {
     }
 
     public abstract String getCreateTableQuery();
+
     public abstract String getTableName();
     public abstract PreparedStatement fillInsertQuery(PreparedStatement p, T t) throws SQLException;
     public abstract ArrayList<String> getColumns();

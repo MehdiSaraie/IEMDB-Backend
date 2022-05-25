@@ -10,7 +10,7 @@ import entities.User;
 
 public class CommentRepository extends Repository<Comment> {
 
-    private static final String TABLE_NAME = "comments";
+    private String TABLE_NAME = "comments";
     private static CommentRepository instance;
 
     protected CommentRepository() throws SQLException {
@@ -27,27 +27,28 @@ public class CommentRepository extends Repository<Comment> {
         return instance;
     }
 
-    @Override
-    public String getTableName() {
-        return TABLE_NAME;
-    }
+
 
     @Override
     public String getCreateTableQuery() {
         return "CREATE TABLE IF NOT EXISTS comments (" +
                 "id INT NOT NULL AUTO_INCREMENT," +
-                "user_id INT," +
+                "user_email TEXT," +
                 "movie_id INT," +
                 "text TEXT," +
-                "PRIMARY KEY (id))";
+                "PRIMARY KEY (id)" +
 //                "FOREIGN KEY (user_id) REFERENCES users(id)," +
-//                "FOREIGN KEY (movie_id) REFERENCES movies(id))";
+//                "FOREIGN KEY (movie_id) REFERENCES movies(id)" +
+                ")";
+    }
+
+    public String getTableName() {
+        return this.TABLE_NAME;
     }
 
     @Override
     public PreparedStatement fillInsertQuery(PreparedStatement statement, Comment comment) throws SQLException {
-        User user = UserRepository.getInstance().getByEmail(comment.getUserEmail());
-        statement.setInt(1, user.getId());
+        statement.setString(1, comment.getUserEmail());
         statement.setInt(2, comment.getMovieId());
         statement.setString(3, comment.getText());
         return statement;
@@ -55,7 +56,7 @@ public class CommentRepository extends Repository<Comment> {
 
     @Override
     public ArrayList<String> getColumns() {
-        return new ArrayList<String>(Arrays.asList("user_id", "movie_id", "text"));
+        return new ArrayList<String>(Arrays.asList("user_email", "movie_id", "text"));
     }
 
     @Override
@@ -63,7 +64,7 @@ public class CommentRepository extends Repository<Comment> {
         Comment comment = new Comment();
         comment.setId(result.getInt("id"));
         comment.setMovieId(result.getInt("movie_id"));
-        comment.setUserId(result.getInt("user_id"));
+        comment.setUserEmail(result.getString("user_email"));
         comment.setText(result.getString("text"));
         return comment;
     }
@@ -73,13 +74,10 @@ public class CommentRepository extends Repository<Comment> {
         try {
             Connection connection = dataSource.getConnection();
 
-            PreparedStatement statement = connection.prepareStatement(
-                    "SELECT ? FROM ? WHERE movie_id = ?"
-            );
-            statement.setArray(1, (Array) this.getColumns());
-            statement.setString(2, this.getTableName());
-            statement.setInt(3, movieId);
-            ResultSet result = statement.executeQuery();
+            String colStr = String.join(",", this.getColumns());
+            String query = String.format("SELECT id,%s FROM %s WHERE movie_id=%d", colStr, this.getTableName(), movieId);
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(query);
 
             while (result.next()) {
                 Comment comment = this.fillObjectFromResult(result);

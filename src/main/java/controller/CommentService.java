@@ -1,4 +1,4 @@
-package service;
+package controller;
 
 import entities.Comment;
 import domain.IEMDB;
@@ -18,11 +18,11 @@ public class CommentService {
     @PathVariable(value="comment_id") int commentId,
     @RequestParam(value="vote") int vote
   ) {
-    try {
-      IEMDB.getInstance().voteComment(commentId, vote);
-      return new ResponseEntity<>(HttpStatus.OK);
-    } catch (Exception e) {
+    IEMDB iemdb = IEMDB.getInstance();
+    if (!iemdb.isLoggedIn()) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+    iemdb.voteComment(commentId, vote);
+    return new ResponseEntity<>(HttpStatus.OK);
   }
 }

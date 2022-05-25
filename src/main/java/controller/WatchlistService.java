@@ -1,8 +1,7 @@
-package service;
+package controller;
 
 import domain.*;
 import entities.Movie;
-import entities.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +31,9 @@ public class WatchlistService {
     method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public ResponseEntity<String> addMovieToWatchlist(@RequestParam(value = "movie_id") int movieId) {
+  public ResponseEntity<String> addMovieToWatchlist(
+    @RequestParam(value = "movie_id") int movieId
+  ) {
     try {
       IEMDB iemdb = IEMDB.getInstance();
       if (!iemdb.isLoggedIn()) {
@@ -50,7 +51,9 @@ public class WatchlistService {
     method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public ResponseEntity<String> removeMovieFromWatchlist(@RequestParam(value = "movie_id") int movieId) {
+  public ResponseEntity<String> removeMovieFromWatchlist(
+    @RequestParam(value = "movie_id") int movieId
+  ) {
     IEMDB iemdb = IEMDB.getInstance();
     if (!iemdb.isLoggedIn()) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

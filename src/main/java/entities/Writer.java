@@ -1,24 +1,29 @@
 package entities;
 
 public class Writer {
-    private int movie_id;
-    private String writer_name;
+    private int movieId;
+    private String writerName;
+
+    public Writer(int movieId, String writerName) {
+        this.movieId = movieId;
+        this.writerName = writerName;
+    }
 
     public Writer() {}
 
-    public int getMovie_id() {
-        return movie_id;
+    public int getMovieId() {
+        return movieId;
     }
 
-    public void setMovie_id(int movie_id) {
-        this.movie_id = movie_id;
+    public void setMovieId(int movieId) {
+        this.movieId = movieId;
     }
 
-    public String getWriter_name() {
-        return writer_name;
+    public String getWriterName() {
+        return writerName;
     }
 
-    public void setWriter_name(String writer_name) {
-        this.writer_name = writer_name;
+    public void setWriterName(String writerName) {
+        this.writerName = writerName;
     }
 }

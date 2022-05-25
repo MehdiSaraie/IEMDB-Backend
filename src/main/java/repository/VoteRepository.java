@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class VoteRepository extends Repository<Vote>{
-    private static final String TABLE_NAME = "votes";
+    private String TABLE_NAME = "votes";
     private static VoteRepository instance;
 
     protected VoteRepository() throws SQLException {
@@ -27,17 +27,18 @@ public class VoteRepository extends Repository<Vote>{
     }
     @Override
     public String getCreateTableQuery() {
-        return "CREATE TABLE IF NOT EXISTS comments (" +
-                "id INT NOT NULL AUTO_INCREMENT," +
+        return "CREATE TABLE IF NOT EXISTS votes (" +
                 "comment_id INT," +
                 "user_id INT," +
-                "vote INT," +
-                "PRIMARY KEY (id))";
+                "vote INT" +
+//                "PRIMARY KEY (comment_id, user_id)," +
+//                "FOREIGN KEY (user_id) REFERENCES users(id)," +
+//                "FOREIGN KEY (comment_id) REFERENCES comments(id)" +
+                ")";
     }
 
-    @Override
     public String getTableName() {
-        return TABLE_NAME;
+        return this.TABLE_NAME;
     }
 
     @Override

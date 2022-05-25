@@ -6,9 +6,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+
 public class MovieRepository extends Repository<Movie> {
 
-    private static final String TABLE_NAME = "movies";
+    private String TABLE_NAME = "movies";
     private static MovieRepository instance;
 
     protected MovieRepository() throws SQLException {
@@ -25,10 +26,6 @@ public class MovieRepository extends Repository<Movie> {
         return instance;
     }
 
-    @Override
-    public String getTableName() {
-        return TABLE_NAME;
-    }
 
     @Override
     public String getCreateTableQuery() {
@@ -47,9 +44,13 @@ public class MovieRepository extends Repository<Movie> {
         ")";
     }
 
+    public String getTableName() {
+        return this.TABLE_NAME;
+    }
+
     @Override
     public ArrayList<String> getColumns() {
-        return new ArrayList<>(Arrays.asList("name", "summary", "releaseDate", "director", "imdbRate", "duration",
+        return new ArrayList<String>(Arrays.asList("name", "summary", "releaseDate", "director", "imdbRate", "duration",
                 "ageLimit", "image", "coverImage"));
     }
 
@@ -80,41 +81,56 @@ public class MovieRepository extends Repository<Movie> {
         movie.setDuration(result.getInt("duration"));
         movie.setAgeLimit(result.getInt("ageLimit"));
         movie.setImage(result.getString("image"));
-        movie.setCoverImage(result.getString("cover_image"));
+        movie.setCoverImage(result.getString("coverImage"));
 
         return movie;
     }
 
-    //TODO
-    public ArrayList<Movie> search(String name, String genre, String releaseDate, int actorId, String sortBy) {
+    public ArrayList<Movie> search(String name, String genre, String releaseDate, Integer actorId, String sortBy) {
         try {
-            String query = String.format("SELECT %s FROM %s WHERE ", this.getColumns(), this,getTableName());
+            String query = String.format("SELECT id, %s FROM %s WHERE ", String.join(",", this.getColumns()), this.getTableName());
 
             ArrayList<String> whereClauses = new ArrayList<>();
             if (name != null) {
-                whereClauses.add("");
-            }
-            if (genre != null) {
-                whereClauses.add("");
+                String where = String.format("name LIKE '%%%s%%'", name);
+                whereClauses.add(where);
             }
             if (releaseDate != null) {
-                whereClauses.add("");
+                String where = String.format("releaseDate = '%s'", releaseDate);
+                whereClauses.add(where);
             }
-            if (actorId > 0) {
-                ArrayList<Integer> movieIds = CastRepository.getInstance().getActorMovieIds(actorId);
-                whereClauses.add("id in (?)");
-            }
-            query += String.join(" AND ", whereClauses);
 
-            if (sortBy.equals("imdbRate") || sortBy.equals("date")) {
+            ArrayList<Integer> movieIds = new ArrayList<>();
+            if (genre != null) {
+                movieIds.addAll(GenreRepository.getInstance().getByGenre(genre));
+            }
+            if (actorId != null) {
+                movieIds.addAll(CastRepository.getInstance().getActorMovieIds(actorId));
+            }
+            if (movieIds.size() > 0) {
+                ArrayList<String> ids = new ArrayList<>();
+                for (int i=0; i<movieIds.size(); i++) {
+                    ids.add(String.valueOf(movieIds.get(i)));
+                }
+                String movieId = String.format("id in (%s)", String.join(",", ids));
+                whereClauses.add(movieId);
+            }
+
+            if (whereClauses.size() >= 1) {
+                query += String.join(" AND ", whereClauses);
+            } else {
+                query += " 1 ";
+            }
+
+            if (sortBy != null && (sortBy.equals("imdbRate") || sortBy.equals("releaseDate"))) {
                 query += String.format(" ORDER BY %s DESC", sortBy);
             }
 
+            query += " LIMIT 20 ";
             ArrayList<Movie> movies = new ArrayList<>();
-
             Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-
+            System.out.println(query);
             ResultSet result = statement.executeQuery(query);
             while (result.next()) {
                 Movie movie = this.fillObjectFromResult(result);

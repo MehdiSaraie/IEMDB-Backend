@@ -1,4 +1,4 @@
-package service;
+package controller;
 
 import domain.*;
 import entities.Comment;
@@ -46,12 +46,11 @@ public class MovieService {
     @RequestParam(value = "rate") int rate
   ) {
     IEMDB iemdb = IEMDB.getInstance();
-    User currentUser = iemdb.getLoggedInUser();
-    if (currentUser == null) {
+    if (!iemdb.isLoggedIn()) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
     else {
-      iemdb.rateMovie(currentUser.getEmail(), movieId, rate);
+      iemdb.rateMovie(iemdb.getLoggedInUser().getEmail(), movieId, rate);
       return new ResponseEntity<>(HttpStatus.OK);
     }
   }

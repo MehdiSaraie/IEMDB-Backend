@@ -15,6 +15,9 @@ public class Movie {
     private int ageLimit;
     private String image;
     private String coverImage;
+    private ArrayList<String> writers;
+    private ArrayList<String> genres;
+    private ArrayList<Integer> cast;
 
     public Movie(int id, String name, String summary, String releaseDate, String director,
                  float imdbRate, int duration, int ageLimit, String image, String coverImage) {
@@ -114,4 +117,27 @@ public class Movie {
 
     public void setCoverImage(String coverImage) { this.coverImage = coverImage; }
 
+    public ArrayList<String> getWriters() {
+        return writers;
+    }
+
+    public void setWriters(ArrayList<String> writers) {
+        this.writers = writers;
+    }
+
+    public ArrayList<String> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(ArrayList<String> genres) {
+        this.genres = genres;
+    }
+
+    public ArrayList<Integer> getCast() {
+        return cast;
+    }
+
+    public void setCast(ArrayList<Integer> cast) {
+        this.cast = cast;
+    }
 }

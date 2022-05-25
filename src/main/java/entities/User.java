@@ -76,7 +76,7 @@ public class User {
     }
 
     public void getBDateFromString() {
-        SimpleDateFormat formatter = new SimpleDateFormat("MMMM d, yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {
             this.setBDay(formatter.parse(this.getBirthDate()));
         } catch (ParseException e) {
@@ -94,6 +94,7 @@ public class User {
     }
 
     public int calculateAge() {
+        getBDateFromString();
         return new Date().getYear() - this.getBDay().getYear();
     }
 

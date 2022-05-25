@@ -8,8 +8,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+
 public class UserRepository extends Repository<User> {
-    private static final String TABLE_NAME = "users";
+    private String TABLE_NAME = "users";
     private static UserRepository instance;
 
     protected UserRepository() throws SQLException {
@@ -26,10 +27,6 @@ public class UserRepository extends Repository<User> {
         return instance;
     }
 
-    @Override
-    public String getTableName() {
-        return TABLE_NAME;
-    }
 
     @Override
     public String getCreateTableQuery() {
@@ -43,9 +40,13 @@ public class UserRepository extends Repository<User> {
             "PRIMARY KEY (id))";
     }
 
+    public String getTableName() {
+        return this.TABLE_NAME;
+    }
+
     @Override
     public ArrayList<String> getColumns() {
-        return new ArrayList<>(Arrays.asList("email", "password", "nickname", "name", "birthDate"));
+        return new ArrayList<String>(Arrays.asList("email", "password", "nickname", "name", "birthDate"));
     }
 
     @Override
@@ -71,16 +72,16 @@ public class UserRepository extends Repository<User> {
     }
 
     public User getByEmail(String email) {
-        User user  = new User();
+        User user = null;
         try {
             Connection connection = dataSource.getConnection();
 
-            String sql = String.format("SELECT (id,%s) FROM %s WHERE email = ?", String.join(",", this.getColumns()), email);
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet result = statement.executeQuery();
-
-            user = this.fillObjectFromResult(result);
-
+            String query = String.format("SELECT id,%s FROM %s WHERE email='%s'", String.join(",", this.getColumns()), this.getTableName(), email);
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(query);
+            if (result.next()) {
+                user = this.fillObjectFromResult(result);
+            }
             result.close();
             statement.close();
             connection.close();

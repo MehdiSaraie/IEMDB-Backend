@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class RateRepository extends Repository<Rate>{
-    private static final String TABLE_NAME = "rate";
+    private String TABLE_NAME = "rates";
     private static RateRepository instance;
 
     protected RateRepository() throws SQLException {
@@ -28,17 +28,16 @@ public class RateRepository extends Repository<Rate>{
 
     @Override
     public String getCreateTableQuery() {
-        return "CREATE TABLE IF NOT EXISTS rate (" +
-            "id INT NOT NULL AUTO_INCREMENT," +
+        return "CREATE TABLE IF NOT EXISTS rates (" +
             "user_id INT," +
             "movie_id INT," +
-            "value INT," +
-            "PRIMARY KEY (id))";
+            "value INT" +
+//            "PRIMARY KEY (user_id, movie_id)" +
+            ")";
     }
 
-    @Override
     public String getTableName() {
-        return TABLE_NAME;
+        return this.TABLE_NAME;
     }
 
     @Override

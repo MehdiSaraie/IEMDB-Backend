@@ -24,11 +24,16 @@ public class IEMDB {
     public IEMDB() throws IOException, SQLException {
         String version2 = "v2/";
         String baseURL = "http://138.197.181.131:5000/api/";
-        MovieRepository.getInstance().loadFromURL(new URL(baseURL + version2 + "movies"), (Class<Movie>) Movie.class);
-//        CastRepository.getInstance().loadFromURL(new URL(baseURL + "movies"));
-        ActorRepository.getInstance().loadFromURL(new URL(baseURL + version2 + "actors"), (Class<Actor>) Actor.class);
-        UserRepository.getInstance().loadFromURL(new URL(baseURL + "users"), (Class<User>) User.class);
-        CommentRepository.getInstance().loadFromURL(new URL(baseURL + "comments"), (Class<Comment>) Comment.class);
+//        ArrayList<Movie> movies = MovieRepository.getInstance().loadFromURL(new URL(baseURL + version2 + "movies"), (Class<Movie>) Movie.class);
+//        ArrayList<Actor> actors = ActorRepository.getInstance().loadFromURL(new URL(baseURL + version2 + "actors"), (Class<Actor>) Actor.class);
+//        CastRepository.getInstance().load(movies);
+//        GenreRepository.getInstance().load(movies);
+//        WriterRepository.getInstance().load(movies);
+//        ArrayList<User> users = UserRepository.getInstance().loadFromURL(new URL(baseURL + "users"), (Class<User>) User.class);
+//        ArrayList<Comment> comments = CommentRepository.getInstance().loadFromURL(new URL(baseURL + "comments"), (Class<Comment>) Comment.class);
+//        RateRepository.getInstance();
+//        VoteRepository.getInstance();
+//        WatchlistRepository.getInstance();
     }
 
     public static IEMDB getInstance() {
@@ -90,16 +95,13 @@ public class IEMDB {
 
     // ------------------------ movie service methods ---------------------
 
-    public ArrayList<Movie> getMovies(String name, String genre, String releaseDate, int actorId, String sortBy) {
+    public ArrayList<Movie> getMovies(String name, String genre, String releaseDate, Integer actorId, String sortBy) {
         ArrayList<Movie> movies = MovieRepository.getInstance().search(name, genre, releaseDate, actorId, sortBy);
         return movies;
     }
 
     public void addComment(int movieId, String text) throws CustomException {
         User user = this.getLoggedInUser();
-        if (user == null) {
-            throw new CustomException("Not logged in");
-        }
         Comment comment = new Comment(user.getEmail(), movieId, text);
         CommentRepository.getInstance().add(comment);
     }
@@ -118,20 +120,18 @@ public class IEMDB {
 
     // ------------------------ comment service methods -------------------
 
-    public void voteComment(int commentId, int voteValue) throws Exception {
-        User user = getLoggedInUser();
-        if (user == null) {
-            throw new Exception();
-        }
+    public Vote voteComment(int commentId, int voteValue) {
+        User user = this.getLoggedInUser();
         Comment comment = CommentRepository.getInstance().getById(commentId);
-        if (comment == null) {
-            throw new Exception();
+        Vote vote = null;
+        if (comment != null) {
+            vote = new Vote(commentId, user.getId(), voteValue);
+            VoteRepository.getInstance().add(vote);
         }
-        Vote vote  = new Vote(commentId, user.getId(), voteValue);
-        VoteRepository.getInstance().add(vote);
+        return vote;
     }
 
-    // -------------------------watchlist service methods ---------------------
+    // ------------------------ watchlist service methods ---------------------
 
     public ArrayList<Movie> getWatchlist() {
         User user = this.getLoggedInUser();
@@ -144,12 +144,12 @@ public class IEMDB {
         Movie movie = MovieRepository.getInstance().getById(movieId);
         if (user.calculateAge() < movie.getAgeLimit())
             throw new CustomException("AgeLimitError");
-        WatchlistRepository.getInstance().addToWatchlist(user.getId(), movieId);
+        Watchlist watchlist = new Watchlist(movieId, user.getId());
+        WatchlistRepository.getInstance().add(watchlist);
     }
 
     public void removeFromWatchList(int movieId) {
         User user = this.getLoggedInUser();
         WatchlistRepository.getInstance().removeFromWatchlist(user.getId(), movieId);
-
     }
 }
