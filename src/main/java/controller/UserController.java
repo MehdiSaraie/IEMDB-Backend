@@ -1,7 +1,6 @@
 package controller;
 
 import domain.IEMDB;
-import entities.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +9,6 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -70,7 +68,7 @@ public class UserController {
       String JWT = authenticator.generateJWTForUser(email);
       return new ResponseEntity<>(JWT, HttpStatus.OK);
     } catch(Exception e) {
-      return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
   }
 
@@ -83,19 +81,23 @@ public class UserController {
     @RequestParam (value = "code") String code
   ) throws InvalidKeyException, NoSuchAlgorithmException {
     RestTemplate template = new RestTemplate();
-    RequestEntity authRequest = RequestEntity.post(URI.create("https://github.com/login/oauth/access_token?client_id=" + "17736afbe983a0754dd1" +
+    RequestEntity authRequest = RequestEntity.post(URI.create(
+            "https://github.com/login/oauth/access_token?client_id=" + "17736afbe983a0754dd1" +
             "&client_secret=" + "d69606cc6507816471a8c5b79d879ab36e96d837" +
-            "&code=" + code)).accept(MediaType.APPLICATION_JSON).build();
-    ResponseEntity<HashMap> authresponse = template.exchange(authRequest, HashMap.class);
+            "&code=" + code
+    )).accept(MediaType.APPLICATION_JSON).build();
+    ResponseEntity<HashMap> authResponse = template.exchange(authRequest, HashMap.class);
 
     HttpHeaders headers = new HttpHeaders();
-    headers.set("Authorization", "token " + authresponse.getBody().get("access_token"));
+    headers.set("Authorization", "token " + authResponse.getBody().get("access_token"));
     headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-    RequestEntity userInfoRequest = new RequestEntity(headers, HttpMethod.GET, URI.create("https://api.github.com/user"));
+    RequestEntity userInfoRequest = new RequestEntity(headers, HttpMethod.GET, URI.create(
+            "https://api.github.com/user"
+    ));
     ResponseEntity<HashMap> userDataResponse = template.exchange(userInfoRequest, HashMap.class);
     HashMap<String, String> userData = userDataResponse.getBody();
     System.out.println(userData);
-    //TODO add or update user in database
+//    IEMDB.getInstance().signup();
     String JWT = new AuthenticationHelper().generateJWTForUser(userData.get("email"));
     System.out.println(JWT);
     HashMap response = new HashMap();

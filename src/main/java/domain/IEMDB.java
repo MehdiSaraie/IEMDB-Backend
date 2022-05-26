@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import controller.AuthenticationHelper;
 import entities.*;
 import repository.*;
 import java.net.URL;
@@ -43,11 +44,12 @@ public class IEMDB {
     // --------------------------- authentication ---------------------------
 
     public void login(String email, String password) throws Exception {
+        AuthenticationHelper authenticator = new AuthenticationHelper();
         User user = UserRepository.getInstance().getByEmail(email);
         if (user == null) {
             throw new CustomException("User doesn't exist");
         }
-        if (!user.getPassword().equals(password)) {
+        if (!authenticator.passwordMatches(password, user.getPassword())) {
             throw new CustomException("Wrong password");
         }
         this.setLoggedInUser(user);

@@ -4,11 +4,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
+
 
 public class AuthenticationHelper {
     public String hashPassword(String password) {
@@ -60,5 +69,20 @@ public class AuthenticationHelper {
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
         }
         return new String(hexChars);
+    }
+
+    public Map<String, String> validateJWT(String token) {
+        SecretKey secretKey = Keys.hmacShaKeyFor("iemdb1401".getBytes(StandardCharsets.UTF_8));
+        Jws<Claims> claims = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token);
+
+        Map<String, String> payload = new HashMap<>();
+        claims.getBody().forEach((key, value) -> {
+            payload.put(key, value.toString());
+        });
+
+        return payload;
     }
 }

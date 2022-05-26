@@ -1,6 +1,7 @@
 package repository;
 
 
+import controller.AuthenticationHelper;
 import entities.User;
 import org.springframework.ejb.access.SimpleRemoteSlsbInvokerInterceptor;
 
@@ -52,7 +53,9 @@ public class UserRepository extends Repository<User> {
     @Override
     public PreparedStatement fillInsertQuery(PreparedStatement statement, User user) throws SQLException {
         statement.setString(1, user.getEmail());
-        statement.setString(2, user.getPassword());
+        AuthenticationHelper authenticator = new AuthenticationHelper();
+        String hashedPassword = authenticator.hashPassword(user.getPassword());
+        statement.setString(2, hashedPassword);
         statement.setString(3, user.getNickname());
         statement.setString(4, user.getName());
         statement.setString(5, user.getBirthDate());
