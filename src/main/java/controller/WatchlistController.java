@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class WatchlistService {
+public class WatchlistController {
   @RequestMapping(
     value = "/watchlist",
     method = RequestMethod.GET,

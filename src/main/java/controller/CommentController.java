@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class CommentService {
+public class CommentController {
   @RequestMapping(
     value = "/comments/{comment_id}/addVote",
     method = RequestMethod.POST,

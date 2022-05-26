@@ -109,6 +109,12 @@
         <artifactId>mysql-connector-java</artifactId>
         <version>8.0.11</version>
       </dependency>
+      <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-crypto</artifactId>
+        <version>5.1.4.RELEASE</version>
+      </dependency>
+
     </dependencies>
 
     <build>

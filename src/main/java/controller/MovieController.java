@@ -3,7 +3,6 @@ package controller;
 import domain.*;
 import entities.Comment;
 import entities.Movie;
-import entities.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class MovieService {
+public class MovieController {
   @RequestMapping(value = "/movies", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<Movie> getMovies(

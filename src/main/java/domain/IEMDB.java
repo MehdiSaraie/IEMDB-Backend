@@ -24,16 +24,16 @@ public class IEMDB {
     public IEMDB() throws IOException, SQLException {
         String version2 = "v2/";
         String baseURL = "http://138.197.181.131:5000/api/";
-//        ArrayList<Movie> movies = MovieRepository.getInstance().loadFromURL(new URL(baseURL + version2 + "movies"), (Class<Movie>) Movie.class);
-//        ArrayList<Actor> actors = ActorRepository.getInstance().loadFromURL(new URL(baseURL + version2 + "actors"), (Class<Actor>) Actor.class);
-//        CastRepository.getInstance().load(movies);
-//        GenreRepository.getInstance().load(movies);
-//        WriterRepository.getInstance().load(movies);
-//        ArrayList<User> users = UserRepository.getInstance().loadFromURL(new URL(baseURL + "users"), (Class<User>) User.class);
-//        ArrayList<Comment> comments = CommentRepository.getInstance().loadFromURL(new URL(baseURL + "comments"), (Class<Comment>) Comment.class);
-//        RateRepository.getInstance();
-//        VoteRepository.getInstance();
-//        WatchlistRepository.getInstance();
+        ArrayList<Movie> movies = MovieRepository.getInstance().loadFromURL(new URL(baseURL + version2 + "movies"), (Class<Movie>) Movie.class);
+        ArrayList<Actor> actors = ActorRepository.getInstance().loadFromURL(new URL(baseURL + version2 + "actors"), (Class<Actor>) Actor.class);
+        CastRepository.getInstance().load(movies);
+        GenreRepository.getInstance().load(movies);
+        WriterRepository.getInstance().load(movies);
+        ArrayList<User> users = UserRepository.getInstance().loadFromURL(new URL(baseURL + "users"), (Class<User>) User.class);
+        ArrayList<Comment> comments = CommentRepository.getInstance().loadFromURL(new URL(baseURL + "comments"), (Class<Comment>) Comment.class);
+        RateRepository.getInstance();
+        VoteRepository.getInstance();
+        WatchlistRepository.getInstance();
     }
 
     public static IEMDB getInstance() {
@@ -67,6 +67,16 @@ public class IEMDB {
 
     public Boolean isLoggedIn() {
         return this.loggedInUser != null;
+    }
+
+    public Boolean doesUserExist(String email) {
+        User user = UserRepository.getInstance().getByEmail(email);
+        return user != null;
+    }
+
+    public void signup(String name, String nickname, String birthDate, String email, String passwordHash) {
+        User user = new User(email, passwordHash, nickname, name, birthDate);
+        UserRepository.getInstance().add(user);
     }
 
     // --------------------------- general methods ------------------------

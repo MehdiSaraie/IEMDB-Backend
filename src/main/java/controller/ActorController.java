@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class ActorService {
+public class ActorController {
   @RequestMapping(
     value = "/actors",
     method = RequestMethod.GET,
