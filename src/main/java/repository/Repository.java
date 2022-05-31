@@ -22,9 +22,15 @@ public abstract class Repository<T> {
         }
 
         dataSource = new ComboPooledDataSource();
-        dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/iemdb");
-        dataSource.setUser("root");
-        dataSource.setPassword("mahshid123");
+
+        dataSource.setJdbcUrl(String.format("jdbc:mysql://localhost:%s/%s",
+                System.getenv("MYSQL_PORT"), System.getenv("MYSQL_DATABASE")));
+        dataSource.setUser(System.getenv("MYSQL_USER"));
+        dataSource.setPassword(System.getenv("MYSQL_PASSWORD"));
+
+//        dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/iemdb");
+//        dataSource.setUser("root");
+//        dataSource.setPassword("mahshid123");
 
         dataSource.setInitialPoolSize(5);
         dataSource.setMinPoolSize(5);
@@ -43,7 +49,7 @@ public abstract class Repository<T> {
         connection.close();
     }
 
-    public ArrayList<T> loadFromURL(URL url, Class<T> tClass) throws SQLException, IOException {
+    public ArrayList<T> loadFromURL(URL url, Class<T> tClass) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         CollectionType listType = objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, tClass);
@@ -93,7 +99,7 @@ public abstract class Repository<T> {
         }
     }
 
-    public void addBulk(ArrayList<T> objects) throws SQLException {
+    public void addBulk(ArrayList<T> objects) {
         try {
             Connection connection = dataSource.getConnection();
             connection.setAutoCommit(false);
