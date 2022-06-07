@@ -16,28 +16,22 @@ import io.jsonwebtoken.JwtException;
 import repository.UserRepository;
 
 
-@WebFilter(urlPatterns = "/*")
+@WebFilter(urlPatterns = {"/movies/*", "/actors/*", "/comment/*"})
 public class JWTFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        System.out.println("JWT FILTER");
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        System.out.println("print 1");
         boolean statusIsSet = false;
         try {
-            System.out.println("print 2");
             String authorization = httpRequest.getHeader("Authorization");
             if (authorization == null || authorization == "") {
-                System.out.println("print 3");
                 httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
                 statusIsSet = true;
-                System.out.println("JWT FILTER 401");
             } else {
-                System.out.println("print 4");
                 AuthenticationHelper authenticator = new AuthenticationHelper();
                 Map<String, String> payload = authenticator.validateJWT(authorization);
                 User user = UserRepository.getInstance().getByEmail(payload.get("email"));
@@ -47,16 +41,12 @@ public class JWTFilter implements Filter {
                 request.setAttribute("user", user);
             }
         } catch (JwtException e) {
-            System.out.println("print 5");
             e.printStackTrace();
             httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
             statusIsSet = true;
-            System.out.println("JWT FILTER 403");
         } catch (Exception e) {
-            System.out.println("print 6");
             httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             statusIsSet = true;
-            System.out.println("JWT FILTER 401");
         }
 
         if (statusIsSet) {

@@ -97,7 +97,7 @@ public class UserController {
     ResponseEntity<HashMap> userDataResponse = template.exchange(userInfoRequest, HashMap.class);
     HashMap<String, String> userData = userDataResponse.getBody();
     System.out.println(userData);
-//    IEMDB.getInstance().signup();
+    IEMDB.getInstance().signup(userData.get("login"), userData.get("name"), userData.get("created_at"), userData.get("email"), userData.get("id"));
     String JWT = new AuthenticationHelper().generateJWTForUser(userData.get("email"));
     System.out.println(JWT);
     HashMap response = new HashMap();
