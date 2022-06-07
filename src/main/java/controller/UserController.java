@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -79,7 +81,7 @@ public class UserController {
   )
   public ResponseEntity<HashMap> AuthCallback(
     @RequestParam (value = "code") String code
-  ) throws InvalidKeyException, NoSuchAlgorithmException {
+  ) throws InvalidKeyException, NoSuchAlgorithmException, ParseException {
     RestTemplate template = new RestTemplate();
     RequestEntity authRequest = RequestEntity.post(URI.create(
             "https://github.com/login/oauth/access_token?client_id=" + "17736afbe983a0754dd1" +
@@ -97,7 +99,10 @@ public class UserController {
     ResponseEntity<HashMap> userDataResponse = template.exchange(userInfoRequest, HashMap.class);
     HashMap<String, String> userData = userDataResponse.getBody();
     System.out.println(userData);
-    IEMDB.getInstance().signup(userData.get("login"), userData.get("name"), userData.get("created_at"), userData.get("email"), userData.get("id"));
+    SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ssZ");
+    SimpleDateFormat ff2 = new SimpleDateFormat("yyyy-MM-dd");
+    String date = ff2.format(ff.parse(userData.get("created_at")));
+    IEMDB.getInstance().signup(userData.get("name"), userData.get("login"), date, userData.get("email"), "");
     String JWT = new AuthenticationHelper().generateJWTForUser(userData.get("email"));
     System.out.println(JWT);
     HashMap response = new HashMap();

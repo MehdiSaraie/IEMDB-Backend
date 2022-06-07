@@ -16,7 +16,7 @@ import io.jsonwebtoken.JwtException;
 import repository.UserRepository;
 
 
-@WebFilter(urlPatterns = {"/movies/*", "/actors/*", "/comment/*"})
+//@WebFilter(urlPatterns = {"/movies/*", "/actors/*", "/comment/*"})
 public class JWTFilter implements Filter {
 
     @Override
