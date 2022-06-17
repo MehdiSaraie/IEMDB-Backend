@@ -29,11 +29,11 @@ public class VoteRepository extends Repository<Vote>{
     public String getCreateTableQuery() {
         return "CREATE TABLE IF NOT EXISTS votes (" +
                 "comment_id INT," +
-                "user_id INT," +
-                "vote INT" +
-//                "PRIMARY KEY (comment_id, user_id)," +
-//                "FOREIGN KEY (user_id) REFERENCES users(id)," +
-//                "FOREIGN KEY (comment_id) REFERENCES comments(id)" +
+                "user_email VARCHAR(50)," +
+                "vote INT," +
+                "PRIMARY KEY (comment_id, user_email)," +
+                "FOREIGN KEY (user_email) REFERENCES users(email)," +
+                "FOREIGN KEY (comment_id) REFERENCES comments(id)" +
                 ")";
     }
 
@@ -43,13 +43,13 @@ public class VoteRepository extends Repository<Vote>{
 
     @Override
     public ArrayList<String> getColumns() {
-        return new ArrayList<>(Arrays.asList("comment_id", "user_id", "vote"));
+        return new ArrayList<>(Arrays.asList("comment_id", "user_email", "vote"));
     }
 
     @Override
     public PreparedStatement fillInsertQuery(PreparedStatement statement, Vote vote) throws SQLException {
         statement.setInt(1, vote.getCommentId());
-        statement.setInt(2, vote.getUserId());
+        statement.setString(2, vote.getUserEmail());
         statement.setInt(3, vote.getVote());
         return statement;
     }
@@ -59,7 +59,7 @@ public class VoteRepository extends Repository<Vote>{
         Vote vote = new Vote();
         vote.setId(result.getInt("id"));
         vote.setCommentId(result.getInt("comment_id"));
-        vote.setUserId(result.getInt("user_id"));
+        vote.setUserEmail(result.getString("user_email"));
         vote.setVote(result.getInt("vote"));
         return vote;
     }

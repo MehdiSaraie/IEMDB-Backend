@@ -30,7 +30,7 @@ public class MovieRepository extends Repository<Movie> {
     @Override
     public String getCreateTableQuery() {
         return "CREATE TABLE IF NOT EXISTS movies (" +
-            "id INT NOT NULL AUTO_INCREMENT," +
+            "id INT," +
             "name TEXT," +
             "summary TEXT," +
             "releaseDate DATE," +
@@ -50,21 +50,116 @@ public class MovieRepository extends Repository<Movie> {
 
     @Override
     public ArrayList<String> getColumns() {
-        return new ArrayList<String>(Arrays.asList("name", "summary", "releaseDate", "director", "imdbRate", "duration",
+        return new ArrayList<String>(Arrays.asList("id", "name", "summary", "releaseDate", "director", "imdbRate", "duration",
                 "ageLimit", "image", "coverImage"));
     }
 
     @Override
+    public Movie getById(int movieId){
+        Movie movie = null;
+        try {
+            Connection connection = dataSource.getConnection();
+            String sql = String.format("SELECT id,%s FROM %s WHERE id=?", String.join(",", this.getColumns()), this.getTableName());
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setInt(1, movieId);
+            ResultSet result = statement.executeQuery();
+            System.out.println(statement);
+            System.out.println(result);
+            result.next();
+            System.out.println(result);
+            movie = this.fillObjectFromResult(result);
+            System.out.println(movie);
+            result.close();
+            statement.close();
+
+            joinWriters(connection, movie);
+            joinGenres(connection, movie);
+            joinCast(connection, movie);
+
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return movie;
+    }
+
+    public void joinWriters(Connection connection, Movie movie) {
+        try {
+            String sql = String.format("SELECT writer_name FROM %s INNER JOIN writers ON id=movie_id WHERE id=?", this.getTableName());
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setInt(1, movie.getId());
+            ResultSet result = statement.executeQuery();
+            ArrayList<String> writers = new ArrayList<>();
+            while (result.next()) {
+                String writerName = result.getString("writer_name");
+                writers.add(writerName);
+            }
+            movie.setWriters(writers);
+            System.out.println(movie.getWriters());
+
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void joinGenres(Connection connection, Movie movie) {
+        try {
+            String sql = String.format("SELECT genre FROM %s INNER JOIN genres ON id=movie_id WHERE id=?", this.getTableName());
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setInt(1, movie.getId());
+            ResultSet result = statement.executeQuery();
+            ArrayList<String> genres = new ArrayList<>();
+            while (result.next()) {
+                String genre = result.getString("genre");
+                genres.add(genre);
+            }
+            movie.setGenres(genres);
+            System.out.println(movie.getGenres());
+
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void joinCast(Connection connection, Movie movie) {
+        try {
+            String sql = String.format("SELECT actor_id FROM %s INNER JOIN cast ON id=movie_id WHERE id=?", this.getTableName());
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setInt(1, movie.getId());
+            ResultSet result = statement.executeQuery();
+            ArrayList<Integer> cast = new ArrayList<>();
+            while (result.next()) {
+                int actorId = result.getInt("actor_id");
+                cast.add(actorId);
+            }
+            movie.setCast(cast);
+            System.out.println(movie.getCast());
+
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public PreparedStatement fillInsertQuery(PreparedStatement statement, Movie movie) throws SQLException {
-        statement.setString(1, movie.getName());
-        statement.setString(2, movie.getSummary());
-        statement.setString(3, movie.getReleaseDate());
-        statement.setString(4, movie.getDirector());
-        statement.setFloat(5, movie.getImdbRate());
-        statement.setInt(6, movie.getDuration());
-        statement.setInt(7, movie.getAgeLimit());
-        statement.setString(8, movie.getImage());
-        statement.setString(9, movie.getCoverImage());
+        statement.setInt(1, movie.getId());
+        statement.setString(2, movie.getName());
+        statement.setString(3, movie.getSummary());
+        statement.setString(4, movie.getReleaseDate());
+        statement.setString(5, movie.getDirector());
+        statement.setFloat(6, movie.getImdbRate());
+        statement.setInt(7, movie.getDuration());
+        statement.setInt(8, movie.getAgeLimit());
+        statement.setString(9, movie.getImage());
+        statement.setString(10, movie.getCoverImage());
         return statement;
     }
 

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
+import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
@@ -16,7 +17,7 @@ public abstract class Repository<T> {
 
     protected Repository() throws SQLException {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -28,15 +29,20 @@ public abstract class Repository<T> {
 //        dataSource.setUser(System.getenv("MYSQL_USER"));
 //        dataSource.setPassword(System.getenv("MYSQL_PASSWORD"));
 
-        dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/iemdb");
-        dataSource.setUser("root");
-        dataSource.setPassword("mahshid123");
+        try {
+            dataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
+            dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/iemdb");
+            dataSource.setUser("root");
+            dataSource.setPassword("mahshid123");
 
-        dataSource.setInitialPoolSize(5);
-        dataSource.setMinPoolSize(5);
-        dataSource.setAcquireIncrement(5);
-        dataSource.setMaxPoolSize(20);
-        dataSource.setMaxStatements(100);
+            dataSource.setInitialPoolSize(5);
+            dataSource.setMinPoolSize(5);
+            dataSource.setAcquireIncrement(5);
+            dataSource.setMaxPoolSize(20);
+            dataSource.setMaxStatements(100);
+        } catch (PropertyVetoException e) {
+            e.printStackTrace();
+        }
 
         this.createTable();
     }
@@ -125,7 +131,7 @@ public abstract class Repository<T> {
             questionMarks.add("?");
         }
         String joinedQuestionMarks = String.join(",", questionMarks);
-        return String.format("INSERT INTO %s (%s) VALUES (%s)", this.getTableName(), String.join(",", this.getColumns()), joinedQuestionMarks);
+        return String.format("INSERT IGNORE INTO %s (%s) VALUES (%s)", this.getTableName(), String.join(",", this.getColumns()), joinedQuestionMarks);
     }
 
     public abstract String getCreateTableQuery();

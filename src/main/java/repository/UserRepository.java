@@ -32,13 +32,12 @@ public class UserRepository extends Repository<User> {
     @Override
     public String getCreateTableQuery() {
         return "CREATE TABLE IF NOT EXISTS users (" +
-            "id INT NOT NULL AUTO_INCREMENT," +
-            "email TEXT," +
+            "email VARCHAR(50)," +
             "password TEXT," +
             "nickname TEXT," +
             "name TEXT," +
             "birthDate DATE," +
-            "PRIMARY KEY (id))";
+            "PRIMARY KEY (email))";
     }
 
     public String getTableName() {
@@ -65,7 +64,6 @@ public class UserRepository extends Repository<User> {
     @Override
     public User fillObjectFromResult(ResultSet result) throws SQLException {
         User user = new User();
-        user.setId(result.getInt("id"));
         user.setEmail(result.getString("email"));
         user.setPassword(result.getString("password"));
         user.setNickname(result.getString("nickname"));
@@ -79,7 +77,7 @@ public class UserRepository extends Repository<User> {
         try {
             Connection connection = dataSource.getConnection();
 
-            String query = String.format("SELECT id,%s FROM %s WHERE email='%s'", String.join(",", this.getColumns()), this.getTableName(), email);
+            String query = String.format("SELECT %s FROM %s WHERE email='%s'", String.join(",", this.getColumns()), this.getTableName(), email);
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(query);
             if (result.next()) {

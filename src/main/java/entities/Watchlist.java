@@ -2,11 +2,11 @@ package entities;
 
 public class Watchlist {
     private int movieId;
-    private int userId;
+    private String userEmail;
 
-    public Watchlist(int movieId, int userId) {
+    public Watchlist(int movieId, String userEmail) {
         this.movieId = movieId;
-        this.userId = userId;
+        this.userEmail = userEmail;
     }
 
     public Watchlist() {}
@@ -19,11 +19,11 @@ public class Watchlist {
         this.movieId = movieId;
     }
 
-    public int getUserId() {
-        return userId;
+    public String getUserEmail() {
+        return userEmail;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 }

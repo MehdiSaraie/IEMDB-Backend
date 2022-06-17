@@ -36,10 +36,10 @@ public class CastRepository extends Repository<Cast>{
     public String getCreateTableQuery() {
         return "CREATE TABLE IF NOT EXISTS cast (" +
                 "movie_id INT," +
-                "actor_id INT" +
-//                "PRIMARY KEY (movie_id, actor_id)," +
-//                "FOREIGN KEY (movie_id) REFERENCES movies(id)," +
-//                "FOREIGN KEY (actor_id) REFERENCES actors(id)" +
+                "actor_id INT," +
+                "PRIMARY KEY (movie_id, actor_id)," +
+                "FOREIGN KEY (movie_id) REFERENCES movies(id)," +
+                "FOREIGN KEY (actor_id) REFERENCES actors(id)" +
                 ")";
     }
 
@@ -58,7 +58,7 @@ public class CastRepository extends Repository<Cast>{
 
     @Override
     public ArrayList<String> getColumns() {
-        return new ArrayList<>(Arrays.asList("movie_id", "actor_id"));
+        return new ArrayList<>(Arrays.asList("actor_id", "movie_id"));
     }
 
     @Override
@@ -71,8 +71,8 @@ public class CastRepository extends Repository<Cast>{
 
     @Override
     public PreparedStatement fillInsertQuery(PreparedStatement statement, Cast cast) throws SQLException {
-        statement.setInt(1, cast.getMovieId());
-        statement.setInt(2, cast.getActorId());
+        statement.setInt(1, cast.getActorId());
+        statement.setInt(2, cast.getMovieId());
         return statement;
     }
 

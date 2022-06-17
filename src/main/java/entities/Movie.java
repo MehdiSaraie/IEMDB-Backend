@@ -19,13 +19,16 @@ public class Movie {
     private ArrayList<String> genres;
     private ArrayList<Integer> cast;
 
-    public Movie(int id, String name, String summary, String releaseDate, String director,
-                 float imdbRate, int duration, int ageLimit, String image, String coverImage) {
+    public Movie(int id, String name, String summary, String releaseDate, String director, ArrayList<String> writers,
+                 ArrayList<String> genres, ArrayList<Integer> cast, float imdbRate, int duration, int ageLimit, String image, String coverImage) {
         this.id = id;
         this.name = name;
         this.summary = summary;
         this.releaseDate = releaseDate;
         this.director = director;
+        this.writers = writers;
+        this.genres = genres;
+        this.cast = cast;
         this.imdbRate = imdbRate;
         this.duration = duration;
         this.ageLimit = ageLimit;

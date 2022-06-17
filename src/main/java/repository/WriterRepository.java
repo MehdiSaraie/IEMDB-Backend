@@ -41,8 +41,9 @@ public class WriterRepository extends Repository<Writer> {
     public String getCreateTableQuery() {
         return "CREATE TABLE IF NOT EXISTS writers (" +
                 "movie_id INT," +
-                "writer_name VARCHAR(50)" +
-//                "FOREIGN KEY (movie_id) REFERENCES movies(id)" +
+                "writer_name VARCHAR(50)," +
+                "PRIMARY KEY (movie_id, writer_name)," +
+                "FOREIGN KEY (movie_id) REFERENCES movies(id)" +
                 ")";
     }
 

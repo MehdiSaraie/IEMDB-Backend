@@ -32,13 +32,13 @@ public class CommentRepository extends Repository<Comment> {
     @Override
     public String getCreateTableQuery() {
         return "CREATE TABLE IF NOT EXISTS comments (" +
-                "id INT NOT NULL AUTO_INCREMENT," +
-                "user_email TEXT," +
+                "id INT AUTO_INCREMENT," +
+                "user_email VARCHAR(50)," +
                 "movie_id INT," +
                 "text TEXT," +
-                "PRIMARY KEY (id)" +
-//                "FOREIGN KEY (user_id) REFERENCES users(id)," +
-//                "FOREIGN KEY (movie_id) REFERENCES movies(id)" +
+                "PRIMARY KEY (id)," +
+                "FOREIGN KEY (user_email) REFERENCES users(email)," +
+                "FOREIGN KEY (movie_id) REFERENCES movies(id)" +
                 ")";
     }
 

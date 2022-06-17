@@ -2,12 +2,12 @@ package entities;
 
 public class Rate {
     private int id;
-    private int userId;
+    private String userEmail;
     private int movieId;
     private int rateValue;
 
-    public Rate(int userId, int movieId, int rateValue) {
-        this.userId = userId;
+    public Rate(String userEmail, int movieId, int rateValue) {
+        this.userEmail = userEmail;
         this.movieId = movieId;
         this.rateValue = rateValue;
     }
@@ -22,12 +22,12 @@ public class Rate {
         this.id = id;
     }
 
-    public int getUserId() {
-        return userId;
+    public String getUserEmail() {
+        return userEmail;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
     public int getMovieId() {

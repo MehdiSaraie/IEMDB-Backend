@@ -29,10 +29,12 @@ public class RateRepository extends Repository<Rate>{
     @Override
     public String getCreateTableQuery() {
         return "CREATE TABLE IF NOT EXISTS rates (" +
-            "user_id INT," +
+            "user_email VARCHAR(50)," +
             "movie_id INT," +
             "value INT" +
-//            "PRIMARY KEY (user_id, movie_id)" +
+            "PRIMARY KEY (user_email, movie_id)," +
+            "FOREIGN KEY user_email REFERENCES users(email)," +
+            "FOREIGN KEY movie_id REFERENCES movies(id)" +
             ")";
     }
 
@@ -42,12 +44,12 @@ public class RateRepository extends Repository<Rate>{
 
     @Override
     public ArrayList<String> getColumns() {
-        return new ArrayList<>(Arrays.asList("user_id", "movie_id", "value"));
+        return new ArrayList<>(Arrays.asList("user_email", "movie_id", "value"));
     }
 
     @Override
     public PreparedStatement fillInsertQuery(PreparedStatement statement, Rate rate) throws SQLException {
-        statement.setInt(1, rate.getUserId());
+        statement.setString(1, rate.getUserEmail());
         statement.setInt(2, rate.getMovieId());
         statement.setInt(3, rate.getRateValue());
         return statement;
@@ -58,7 +60,7 @@ public class RateRepository extends Repository<Rate>{
         Rate rate = new Rate();
         rate.setId(result.getInt("id"));
         rate.setMovieId(result.getInt("movie_id"));
-        rate.setUserId(result.getInt("user_id"));
+        rate.setUserEmail(result.getString("user_email"));
         rate.setRateValue(result.getInt("value"));
         return rate;
     }

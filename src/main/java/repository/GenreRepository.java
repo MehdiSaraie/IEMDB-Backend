@@ -40,8 +40,9 @@ public class GenreRepository extends Repository<Genre>{
     public String getCreateTableQuery() {
         return "CREATE TABLE IF NOT EXISTS genres (" +
                 "movie_id INT," +
-                "genre VARCHAR(30)" +
-//                "FOREIGN KEY (movie_id) REFERENCES movies(id)" +
+                "genre VARCHAR(30)," +
+                "PRIMARY KEY (movie_id, genre)," +
+                "FOREIGN KEY (movie_id) REFERENCES movies(id)" +
                 ")";
     }
 

@@ -30,10 +30,10 @@ public class WatchlistRepository extends Repository<Watchlist>{
     public String getCreateTableQuery() {
         return "CREATE TABLE IF NOT EXISTS watchlist (" +
                 "movie_id INT," +
-                "user_id INT" +
-//                "PRIMARY KEY(user_id, movie_id)," +
-//                "FOREIGN KEY (user_id) REFERENCES users(id)" +
-//                "FOREIGN KEY (movie_id) REFERENCES movies(id)" +
+                "user_email VARCHAR(50)," +
+                "PRIMARY KEY (user_email, movie_id)," +
+                "FOREIGN KEY (user_email) REFERENCES users(email)," +
+                "FOREIGN KEY (movie_id) REFERENCES movies(id)" +
                 ")";
     }
 
@@ -43,13 +43,13 @@ public class WatchlistRepository extends Repository<Watchlist>{
 
     @Override
     public ArrayList<String> getColumns() {
-        return new ArrayList<>(Arrays.asList("movie_id", "user_id"));
+        return new ArrayList<>(Arrays.asList("movie_id", "user_email"));
     }
 
     @Override
     public PreparedStatement fillInsertQuery(PreparedStatement statement, Watchlist watchlist) throws SQLException {
         statement.setInt(1, watchlist.getMovieId());
-        statement.setInt(2, watchlist.getUserId());
+        statement.setString(2, watchlist.getUserEmail());
         return statement;
     }
 
@@ -57,17 +57,17 @@ public class WatchlistRepository extends Repository<Watchlist>{
     public Watchlist fillObjectFromResult(ResultSet result) throws SQLException {
         Watchlist watchlist = new Watchlist();
         watchlist.setMovieId(result.getInt("movie_id"));
-        watchlist.setUserId(result.getInt("user_id"));
+        watchlist.setUserEmail(result.getString("user_email"));
         return watchlist;
     }
 
-    public ArrayList<Movie> getUserWatchlist(int userId) {
+    public ArrayList<Movie> getUserWatchlist(String userEmail) {
         ArrayList<Movie> watchlist = new ArrayList<>();
         try {
             Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
 
-            String query = String.format("SELECT movie_id FROM watchlist WHERE user_id=%d", userId);
+            String query = String.format("SELECT movie_id FROM watchlist WHERE user_email=%s", userEmail);
             ResultSet result = statement.executeQuery(query);
             while (result.next()) {
                 int movieId = result.getInt(1);
@@ -84,12 +84,12 @@ public class WatchlistRepository extends Repository<Watchlist>{
         return watchlist;
     }
 
-    public void removeFromWatchlist(int userId, int movieId) {
+    public void removeFromWatchlist(String userEmail, int movieId) {
         try {
             Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
 
-            String query = String.format("DELETE FROM watchlist WHERE user_id=%d AND movie_id=%d", userId, movieId);
+            String query = String.format("DELETE FROM watchlist WHERE user_email=%s AND movie_id=%d", userEmail, movieId);
             statement.execute(query);
 
             statement.close();

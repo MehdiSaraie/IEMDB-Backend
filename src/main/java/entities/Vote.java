@@ -3,12 +3,12 @@ package entities;
 public class Vote {
     private int id;
     private int commentId;
-    private int userId;
+    private String userEmail;
     private int vote;
 
-    public Vote(int commentId, int userId, int vote) {
+    public Vote(int commentId, String userEmail, int vote) {
         this.commentId = commentId;
-        this.userId = userId;
+        this.userEmail = userEmail;
         this.vote = vote;
     }
 
@@ -30,12 +30,12 @@ public class Vote {
         this.commentId = commentId;
     }
 
-    public int getUserId() {
-        return userId;
+    public String getUserEmail() {
+        return userEmail;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
     public int getVote() {

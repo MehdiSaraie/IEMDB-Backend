@@ -25,7 +25,10 @@ public class IEMDB {
     public IEMDB() throws IOException, SQLException {
         String version2 = "v2/";
         String baseURL = "http://138.197.181.131:5000/api/";
+        System.out.println("yessssssssssss");
         ArrayList<Movie> movies = MovieRepository.getInstance().loadFromURL(new URL(baseURL + version2 + "movies"), (Class<Movie>) Movie.class);
+        System.out.println(movies.get(0).getName());
+        System.out.println(movies.get(0).getWriters());
         ArrayList<Actor> actors = ActorRepository.getInstance().loadFromURL(new URL(baseURL + version2 + "actors"), (Class<Actor>) Actor.class);
         CastRepository.getInstance().load(movies);
         GenreRepository.getInstance().load(movies);
@@ -126,7 +129,7 @@ public class IEMDB {
     public void rateMovie(String userEmail, int movieId, int rateValue) {
         User user = UserRepository.getInstance().getByEmail(userEmail);
         Movie movie = MovieRepository.getInstance().getById(movieId);
-        Rate rate = new Rate(user.getId(), movieId, rateValue);
+        Rate rate = new Rate(user.getEmail(), movieId, rateValue);
         RateRepository.getInstance().add(rate);
     }
 
@@ -137,7 +140,7 @@ public class IEMDB {
         Comment comment = CommentRepository.getInstance().getById(commentId);
         Vote vote = null;
         if (comment != null) {
-            vote = new Vote(commentId, user.getId(), voteValue);
+            vote = new Vote(commentId, user.getEmail(), voteValue);
             VoteRepository.getInstance().add(vote);
         }
         return vote;
@@ -147,7 +150,7 @@ public class IEMDB {
 
     public ArrayList<Movie> getWatchlist() {
         User user = this.getLoggedInUser();
-        ArrayList<Movie> watchlist = WatchlistRepository.getInstance().getUserWatchlist(user.getId());
+        ArrayList<Movie> watchlist = WatchlistRepository.getInstance().getUserWatchlist(user.getEmail());
         return watchlist;
     }
 
@@ -156,12 +159,12 @@ public class IEMDB {
         Movie movie = MovieRepository.getInstance().getById(movieId);
         if (user.calculateAge() < movie.getAgeLimit())
             throw new CustomException("AgeLimitError");
-        Watchlist watchlist = new Watchlist(movieId, user.getId());
+        Watchlist watchlist = new Watchlist(movieId, user.getEmail());
         WatchlistRepository.getInstance().add(watchlist);
     }
 
     public void removeFromWatchList(int movieId) {
         User user = this.getLoggedInUser();
-        WatchlistRepository.getInstance().removeFromWatchlist(user.getId(), movieId);
+        WatchlistRepository.getInstance().removeFromWatchlist(user.getEmail(), movieId);
     }
 }

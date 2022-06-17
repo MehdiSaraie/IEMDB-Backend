@@ -33,7 +33,7 @@ public class ActorRepository extends Repository<Actor> {
     @Override
     public String getCreateTableQuery() {
         return "CREATE TABLE IF NOT EXISTS actors (" +
-            "id INT AUTO_INCREMENT," +
+            "id INT," +
             "name VARCHAR(30)," +
             "birthDate TEXT," +
             "nationality VARCHAR(30)," +
@@ -44,15 +44,16 @@ public class ActorRepository extends Repository<Actor> {
 
     @Override
     public ArrayList<String> getColumns() {
-        return new ArrayList<String>(Arrays.asList("name", "birthdate", "nationality", "image"));
+        return new ArrayList<String>(Arrays.asList("id", "name", "birthdate", "nationality", "image"));
     }
 
     @Override
     public PreparedStatement fillInsertQuery(PreparedStatement statement, Actor actor) throws SQLException {
-        statement.setString(1, actor.getName());
-        statement.setString(2, actor.getBirthDate());
-        statement.setString(3, actor.getNationality());
-        statement.setString(4, actor.getImage());
+        statement.setInt(1, actor.getId());
+        statement.setString(2, actor.getName());
+        statement.setString(3, actor.getBirthDate());
+        statement.setString(4, actor.getNationality());
+        statement.setString(5, actor.getImage());
         return statement;
     }
 
