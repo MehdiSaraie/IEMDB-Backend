@@ -1,0 +1,30 @@
+image: quay.io/aminrf/docker-kubectl:latest
+
+services:
+  - docker:dind
+
+stages:
+  - build
+  - deploy
+
+
+build:
+  image: docker
+  stage: build
+  before_script:
+    - docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD quay.io
+  script:
+    - docker build ./iemdb/ -t quay.io/mahshidhpour/ie-backend:$CI_BUILD_REF
+    - docker push quay.io/mahshidhpour/ie-backend:$CI_BUILD_REF
+    - docker rmi quay.io/mahshidhpour/ie-backend:$CI_BUILD_REF || true
+  after_script:
+    - docker logout quay.io
+
+
+deploy:
+  stage: deploy
+  when: manual
+  script:
+    - echo $KUBE_CONFIG | base64 -d > config
+    - http_proxy=$PROXY_SERVER https_proxy=$PROXY_SERVER kubectl --kubeconfig config set image deployment/iemdb-deployment iemdb-backend=quay.io/mahshidhpour/ie-backend:$CI_BUILD_REF
+    - rm config
