@@ -24,16 +24,18 @@ public abstract class Repository<T> {
 
         dataSource = new ComboPooledDataSource();
 
-//        dataSource.setJdbcUrl(String.format("jdbc:mysql://localhost:%s/%s",
-//                System.getenv("MYSQL_PORT"), System.getenv("MYSQL_DATABASE")));
-//        dataSource.setUser(System.getenv("MYSQL_USER"));
-//        dataSource.setPassword(System.getenv("MYSQL_PASSWORD"));
-
         try {
             dataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
-            dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/iemdb");
-            dataSource.setUser("root");
-            dataSource.setPassword("mahshid123");
+
+
+            dataSource.setJdbcUrl(String.format("jdbc:mysql://localhost:%s/%s",
+                    System.getenv("MYSQL_PORT"), System.getenv("MYSQL_DATABASE")));
+            dataSource.setUser(System.getenv("MYSQL_USER"));
+            dataSource.setPassword(System.getenv("MYSQL_PASSWORD"));
+
+//            dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/iemdb");
+//            dataSource.setUser("root");
+//            dataSource.setPassword("mahshid123");
 
             dataSource.setInitialPoolSize(5);
             dataSource.setMinPoolSize(5);
