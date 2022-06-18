@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iemdb-deployment
+  namespace: 810197524-810196656
+spec:
+  selector:
+    matchLabels:
+      app: iemdb-backend
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: iemdb-backend
+    spec:
+      containers:
+        - name: iemdb-backend
+          image: "quay.io/????????????/ie-backend:latest"
+          imagePullPolicy: Always
+          env:
+          - name: "MYSQL_USER"
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: username    
+          - name: "MYSQL_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: password    
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: "300m"
+              memory: "333Mi"
+            limits:
+              cpu: "300m"
+              memory: "333Mi"
