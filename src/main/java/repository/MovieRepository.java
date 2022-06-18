@@ -59,7 +59,7 @@ public class MovieRepository extends Repository<Movie> {
         Movie movie = null;
         try {
             Connection connection = dataSource.getConnection();
-            String sql = String.format("SELECT id,%s FROM %s WHERE id=?", String.join(",", this.getColumns()), this.getTableName());
+            String sql = String.format("SELECT %s FROM %s WHERE id=?", String.join(",", this.getColumns()), this.getTableName());
             PreparedStatement statement = connection.prepareStatement(sql);
 
             statement.setInt(1, movieId);
@@ -183,7 +183,7 @@ public class MovieRepository extends Repository<Movie> {
 
     public ArrayList<Movie> search(String name, String genre, String releaseDate, Integer actorId, String sortBy) {
         try {
-            String query = String.format("SELECT id, %s FROM %s WHERE ", String.join(",", this.getColumns()), this.getTableName());
+            String query = String.format("SELECT %s FROM %s WHERE ", String.join(",", this.getColumns()), this.getTableName());
 
             ArrayList<String> whereClauses = new ArrayList<>();
             if (name != null) {

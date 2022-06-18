@@ -68,7 +68,7 @@ public abstract class Repository<T> {
         T object = null;
         try {
             Connection connection = dataSource.getConnection();
-            String sql = String.format("SELECT id,%s FROM %s WHERE id=?", String.join(",", this.getColumns()), this.getTableName());
+            String sql = String.format("SELECT %s FROM %s WHERE id=?", String.join(",", this.getColumns()), this.getTableName());
             PreparedStatement statement = connection.prepareStatement(sql);
 
             statement.setInt(1, objectId);

@@ -31,7 +31,7 @@ public class RateRepository extends Repository<Rate>{
         return "CREATE TABLE IF NOT EXISTS rates (" +
             "user_email VARCHAR(50)," +
             "movie_id INT," +
-            "value INT" +
+            "value INT," +
             "PRIMARY KEY (user_email, movie_id)," +
             "FOREIGN KEY user_email REFERENCES users(email)," +
             "FOREIGN KEY movie_id REFERENCES movies(id)" +

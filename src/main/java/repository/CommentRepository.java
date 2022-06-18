@@ -75,7 +75,7 @@ public class CommentRepository extends Repository<Comment> {
             Connection connection = dataSource.getConnection();
 
             String colStr = String.join(",", this.getColumns());
-            String query = String.format("SELECT id,%s FROM %s WHERE movie_id=%d", colStr, this.getTableName(), movieId);
+            String query = String.format("SELECT %s FROM %s WHERE movie_id=%d", colStr, this.getTableName(), movieId);
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(query);
 
