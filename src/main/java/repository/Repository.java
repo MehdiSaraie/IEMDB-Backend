@@ -74,11 +74,8 @@ public abstract class Repository<T> {
             statement.setInt(1, objectId);
             ResultSet result = statement.executeQuery();
             System.out.println(statement);
-            System.out.println(result);
             result.next();
-            System.out.println(result);
             object = this.fillObjectFromResult(result);
-            System.out.println(object);
             result.close();
             statement.close();
             connection.close();

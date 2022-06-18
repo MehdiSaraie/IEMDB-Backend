@@ -25,10 +25,7 @@ public class IEMDB {
     public IEMDB() throws IOException, SQLException {
         String version2 = "v2/";
         String baseURL = "http://138.197.181.131:5000/api/";
-        System.out.println("yessssssssssss");
         ArrayList<Movie> movies = MovieRepository.getInstance().loadFromURL(new URL(baseURL + version2 + "movies"), (Class<Movie>) Movie.class);
-        System.out.println(movies.get(0).getName());
-        System.out.println(movies.get(0).getWriters());
         ArrayList<Actor> actors = ActorRepository.getInstance().loadFromURL(new URL(baseURL + version2 + "actors"), (Class<Actor>) Actor.class);
         CastRepository.getInstance().load(movies);
         GenreRepository.getInstance().load(movies);
