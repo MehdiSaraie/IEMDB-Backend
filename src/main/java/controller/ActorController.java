@@ -17,8 +17,12 @@ public class ActorController {
     method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public ResponseEntity<List<Actor>> getActors(@RequestParam(value = "movie_id") int movie_id) {
-    ArrayList<Actor> actors = IEMDB.getInstance().getMovieCast(movie_id);
+  public ResponseEntity<List<Actor>> getActors(@RequestParam(value = "movie_id") int movieId) {
+    IEMDB iemdb = IEMDB.getInstance();
+    if (!iemdb.isLoggedIn()) {
+      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    ArrayList<Actor> actors = iemdb.getMovieCast(movieId);
     return new ResponseEntity<>(actors, HttpStatus.OK);
   }
 
@@ -27,7 +31,11 @@ public class ActorController {
     method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public Actor getActor(@PathVariable(value = "actor_id") int actorId) {
-    return IEMDB.getInstance().getActorById(actorId);
+  public ResponseEntity<Actor> getActor(@PathVariable(value = "actor_id") int actorId) {
+    IEMDB iemdb = IEMDB.getInstance();
+    if (!iemdb.isLoggedIn()) {
+      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    return new ResponseEntity<>(iemdb.getActorById(actorId), HttpStatus.OK);
   }
 }

@@ -4,8 +4,8 @@ import java.util.Date;
 
 public class Comment {
     private int id;
-    private int userId;
     private String userEmail;
+    private String userNickname;
     private int movieId;
     private String text;
     private Date date = new Date();
@@ -28,14 +28,6 @@ public class Comment {
         this.id = id;
     }
 
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
     public String getUserEmail() {
         return userEmail;
     }
@@ -43,6 +35,10 @@ public class Comment {
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
     }
+
+    public String getUserNickname() { return userNickname; }
+
+    public void setUserNickname(String userNickname) { this.userNickname = userNickname; }
 
     public int getMovieId() {
         return movieId;

@@ -99,7 +99,7 @@ public class UserController {
     ResponseEntity<HashMap> userDataResponse = template.exchange(userInfoRequest, HashMap.class);
     HashMap<String, String> userData = userDataResponse.getBody();
     System.out.println(userData);
-    SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ssZ");
+    SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     SimpleDateFormat ff2 = new SimpleDateFormat("yyyy-MM-dd");
     String date = ff2.format(ff.parse(userData.get("created_at")));
     IEMDB.getInstance().signup(userData.get("name"), userData.get("login"), date, userData.get("email"), "");

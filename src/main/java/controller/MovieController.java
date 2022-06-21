@@ -1,6 +1,7 @@
 package controller;
 
 import domain.*;
+import entities.Actor;
 import entities.Comment;
 import entities.Movie;
 import org.springframework.http.HttpStatus;
@@ -15,15 +16,19 @@ import java.util.List;
 public class MovieController {
   @RequestMapping(value = "/movies", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<Movie> getMovies(
+  public ResponseEntity<List<Movie>> getMovies(
     @RequestParam(value = "name", required = false) String name,
     @RequestParam(value = "genre", required = false) String genre,
     @RequestParam(value = "releaseDate", required = false) String releaseDate,
     @RequestParam(value = "sortBy", required = false) String sortBy,
     @RequestParam(value = "actor_id", required = false) Integer actorId) {
 
-    ArrayList<Movie> movies = IEMDB.getInstance().getMovies(name, genre, releaseDate, actorId, sortBy);
-    return movies;
+    IEMDB iemdb = IEMDB.getInstance();
+    if (!iemdb.isLoggedIn()) {
+      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    ArrayList<Movie> movies = iemdb.getMovies(name, genre, releaseDate, actorId, sortBy);
+    return new ResponseEntity<>(movies, HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -31,8 +36,12 @@ public class MovieController {
     method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public Movie getMovie(@PathVariable(value = "movie_id") int movieId) {
-    return IEMDB.getInstance().getMovieById(movieId);
+  public ResponseEntity<Movie> getMovie(@PathVariable(value = "movie_id") int movieId) {
+    IEMDB iemdb = IEMDB.getInstance();
+    if (!iemdb.isLoggedIn()) {
+      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    return new ResponseEntity<>(iemdb.getMovieById(movieId), HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -73,5 +82,18 @@ public class MovieController {
     } catch (CustomException e) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+  }
+
+  @RequestMapping(
+          value = "/comments",
+          method = RequestMethod.GET,
+          produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  public ResponseEntity<List<Comment>> getComments(@RequestParam(value = "movie_id") int movieId) {
+    IEMDB iemdb = IEMDB.getInstance();
+    if (!iemdb.isLoggedIn()) {
+      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    return new ResponseEntity<>(iemdb.getMovieComments(movieId), HttpStatus.OK);
   }
 }

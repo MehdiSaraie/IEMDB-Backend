@@ -65,7 +65,31 @@ public class CommentRepository extends Repository<Comment> {
         comment.setId(result.getInt("id"));
         comment.setMovieId(result.getInt("movie_id"));
         comment.setUserEmail(result.getString("user_email"));
+        comment.setUserNickname(result.getString("nickname"));
         comment.setText(result.getString("text"));
+        return comment;
+    }
+
+    @Override
+    public Comment getById(int objectId){
+        Comment comment = null;
+        try {
+            Connection connection = dataSource.getConnection();
+            String sql = String.format("SELECT id, %s, nickname FROM %s INNER JOIN users ON user_email = email WHERE id=?", String.join(",", this.getColumns()), this.getTableName());
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setInt(1, objectId);
+            ResultSet result = statement.executeQuery();
+            System.out.println(statement);
+            result.next();
+            comment = this.fillObjectFromResult(result);
+            result.close();
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
         return comment;
     }
 
@@ -75,7 +99,7 @@ public class CommentRepository extends Repository<Comment> {
             Connection connection = dataSource.getConnection();
 
             String colStr = String.join(",", this.getColumns());
-            String query = String.format("SELECT %s FROM %s WHERE movie_id=%d", colStr, this.getTableName(), movieId);
+            String query = String.format("SELECT id, %s, nickname FROM %s INNER JOIN users ON user_email = email WHERE movie_id=%d", colStr, this.getTableName(), movieId);
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(query);
 

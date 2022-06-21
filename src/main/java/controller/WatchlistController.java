@@ -27,8 +27,8 @@ public class WatchlistController {
   }
 
   @RequestMapping(
-    value = "/watchlist",
-    method = RequestMethod.PUT,
+    value = "/watchlist/add",
+    method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   public ResponseEntity<String> addMovieToWatchlist(
@@ -47,8 +47,8 @@ public class WatchlistController {
   }
 
   @RequestMapping(
-    value = "/watchlist",
-    method = RequestMethod.DELETE,
+    value = "/watchlist/remove",
+    method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   public ResponseEntity<String> removeMovieFromWatchlist(

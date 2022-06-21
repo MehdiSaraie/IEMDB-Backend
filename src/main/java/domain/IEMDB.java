@@ -79,6 +79,7 @@ public class IEMDB {
     public void signup(String name, String nickname, String birthDate, String email, String passwordHash) {
         User user = new User(email, passwordHash, nickname, name, birthDate);
         UserRepository.getInstance().add(user);
+        this.setLoggedInUser(user);
     }
 
     // --------------------------- general methods ------------------------

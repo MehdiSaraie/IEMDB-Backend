@@ -67,7 +67,7 @@ public class WatchlistRepository extends Repository<Watchlist>{
             Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
 
-            String query = String.format("SELECT movie_id FROM watchlist WHERE user_email=%s", userEmail);
+            String query = String.format("SELECT movie_id FROM watchlist WHERE user_email='%s'", userEmail);
             ResultSet result = statement.executeQuery(query);
             while (result.next()) {
                 int movieId = result.getInt(1);
@@ -89,7 +89,7 @@ public class WatchlistRepository extends Repository<Watchlist>{
             Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
 
-            String query = String.format("DELETE FROM watchlist WHERE user_email=%s AND movie_id=%d", userEmail, movieId);
+            String query = String.format("DELETE FROM watchlist WHERE user_email='%s' AND movie_id=%d", userEmail, movieId);
             statement.execute(query);
 
             statement.close();
