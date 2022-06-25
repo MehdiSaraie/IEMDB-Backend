@@ -1,27 +1,27 @@
+version: '3'
 services:
   backend:
-    image: "iemdb_image"
-    environment:
-      MYSQL_DATABASE: "iemdb"
-      MYSQL_USER: "root"
-      MYSQL_PASSWORD: "mahshid123"
-      MYSQL_ROOT_PASSWORD: "mahshid123"
-      MYSQL_PORT: "3306"
+    image: iemdb_image:0.1
     ports:
-      - "8080:8080"
+      - 8080:8080
+    environment:
+      - MYSQL_DATABASE=iemdb
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=mahshid123
+      - MYSQL_ROOT_PASSWORD=mahshid123
+      - MYSQL_PORT=3306
 
   frontend:
-    image: "iemdb_front"
+    image: iemdb_front:0.1
     ports:
-      - "9500:9500"
+      - 9500:9500
 
   db:
     image: mysql:5.7
-    restart: always
     environment:
-      MYSQL_DATABASE: "iemdb"
-      MYSQL_USER: "root"
-      MYSQL_PASSWORD: "mahshid123"
-      MYSQL_ROOT_PASSWORD: "mahshid123"
+      - MYSQL_DATABASE=iemdb
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=mahshid123
+      - MYSQL_ROOT_PASSWORD=mahshid123
     ports:
-      - "3306:3306"
+      - 3306:3306
