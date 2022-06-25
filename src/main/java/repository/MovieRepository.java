@@ -186,18 +186,18 @@ public class MovieRepository extends Repository<Movie> {
             String query = String.format("SELECT %s FROM %s WHERE ", String.join(",", this.getColumns()), this.getTableName());
 
             ArrayList<String> whereClauses = new ArrayList<>();
-            if (name != null) {
+            if (name != null && name != "") {
                 String where = String.format("name LIKE '%%%s%%'", name);
                 whereClauses.add(where);
             }
-            if (releaseDate != null) {
-                String where = String.format("releaseDate = '%s'", releaseDate);
+            if (releaseDate != null && releaseDate != "") {
+                String where = String.format("releaseDate LIKE '%%%s%%'", releaseDate);
                 whereClauses.add(where);
             }
 
             ArrayList<Integer> movieIds = new ArrayList<>();
-            if (genre != null) {
-                movieIds.addAll(GenreRepository.getInstance().getByGenre(genre));
+            if (genre != null && genre != "") {
+                movieIds.addAll(GenreRepository.getInstance().getMoviesByGenre(genre));
             }
             if (actorId != null) {
                 movieIds.addAll(CastRepository.getInstance().getActorMovieIds(actorId));

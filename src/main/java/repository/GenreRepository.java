@@ -3,6 +3,7 @@ package repository;
 import entities.Genre;
 import entities.Movie;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -67,9 +68,26 @@ public class GenreRepository extends Repository<Genre>{
         return null;
     }
 
-    public ArrayList<Integer> getByGenre(String genre) {
+    public ArrayList<Integer> getMoviesByGenre(String genre) {
         ArrayList<Integer> movieIds = new ArrayList<>();
+        try {
+            String sql = String.format("SELECT movie_id FROM %s WHERE genre=?", this.getTableName());
+            Connection connection = dataSource.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
 
+            statement.setString(1, genre);
+            ResultSet result = statement.executeQuery();
+            ArrayList<String> genres = new ArrayList<>();
+            while (result.next()) {
+                int movieId = result.getInt("movie_id");
+                movieIds.add(movieId);
+            }
+            result.close();
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return movieIds;
     }
 }
